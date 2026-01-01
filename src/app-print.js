@@ -56,7 +56,6 @@ async function printLabel(id) {
             <div class="qr-box">
                 <div id="qr-${item.id}"></div>
                 <div class="sn-text">${item.serial}</div>
-                ${eanCode ? `<div class="ean-text">${eanCode}</div>` : ''}
             </div>
             <div class="barcode-container">
                 ${barcodeSvg}
