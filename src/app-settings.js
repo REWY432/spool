@@ -3,7 +3,7 @@
  * @module app-settings
  */
 
-import { saveSettingsToFirebase } from './services/firebase.js';
+import { saveSettings as saveSettingsToFirebase } from './services/firebase.js';
 import { escapeHtml } from './utils/sanitize.js';
 
 const showToast = (msg, type) => {
