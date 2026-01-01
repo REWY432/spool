@@ -113,11 +113,34 @@ function generatePassportHTML(item) {
         .page {
             width: 297mm;
             height: 210mm;
-            padding: 8mm 12mm;
+            padding: 12mm 15mm;
             background: white;
             page-break-after: always;
             display: flex;
             flex-direction: column;
+            position: relative;
+        }
+        
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 5mm;
+            left: 5mm;
+            right: 5mm;
+            bottom: 5mm;
+            border: 3px double #000;
+            pointer-events: none;
+        }
+        
+        .page::after {
+            content: '';
+            position: absolute;
+            top: 8mm;
+            left: 8mm;
+            right: 8mm;
+            bottom: 8mm;
+            border: 1px solid #666;
+            pointer-events: none;
         }
         
         .page:last-child {
@@ -170,6 +193,31 @@ function generatePassportHTML(item) {
         
         .info-value {
             font-weight: normal;
+        }
+        
+        .serial-number-row {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+            padding: 6px 10px;
+            background: linear-gradient(to right, #f8f8f8, #fff);
+            border: 2px solid #333;
+            border-radius: 6px;
+        }
+        
+        .serial-number-label {
+            font-size: 10pt;
+            font-weight: bold;
+            color: #333;
+            min-width: 160px;
+        }
+        
+        .serial-number-value {
+            font-size: 14pt;
+            font-weight: bold;
+            font-family: 'Consolas', 'Courier New', monospace;
+            color: #000;
+            letter-spacing: 1px;
         }
         
         .manufacturer-block {
@@ -330,9 +378,9 @@ function generatePassportHTML(item) {
                     <span class="info-label">Обозначение Изделия:</span>
                     <span class="info-value">${SPOOL_INFO.designation}</span>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Серийный номер Изделия</span>
-                    <span class="info-value">№ ${item.serial}</span>
+                <div class="serial-number-row">
+                    <span class="serial-number-label">Серийный номер Изделия:</span>
+                    <span class="serial-number-value">№ ${item.serial}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Дата изготовления Изделия</span>
