@@ -32,7 +32,15 @@ export function saveToStorage(key, value) {
 export function loadFromStorage(key, defaultValue = null) {
     try {
         const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : defaultValue;
+        if (!item) return defaultValue;
+        
+        try {
+            return JSON.parse(item);
+        } catch (parseError) {
+            // Если не удалось распарсить как JSON, возвращаем как есть
+            // (для обратной совместимости со старым форматом)
+            return item;
+        }
     } catch (error) {
         console.error(`Failed to load from storage (${key}):`, error);
         return defaultValue;

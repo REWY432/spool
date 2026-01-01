@@ -83,11 +83,13 @@ function loadScriptLibrary(libraryName, url, globalName) {
  * @returns {Promise<*>} Chart.js
  */
 export async function loadChartJS() {
-    return await loadLibrary(
+    // Chart.js нужно загружать через script tag, так как ESM версия требует особой обработки
+    const Chart = await loadLibrary(
         'chartjs',
-        'https://cdn.jsdelivr.net/npm/chart.js',
+        'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
         'Chart'
     );
+    return Chart;
 }
 
 /**
