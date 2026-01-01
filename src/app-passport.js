@@ -10,7 +10,7 @@ import { MONTHS } from './config/constants.js';
  * Данные о компании для паспорта
  */
 const COMPANY_INFO = {
-    manufacturer: 'Общество с ограниченной ответственностью «Юпитер»',
+    manufacturer: 'Общество ограниченной ответственности «Юпитер»',
     manufacturerShort: 'ООО «ЮПИТЕР»',
     inn: '7807188191',
     kpp: '780701001',
@@ -18,39 +18,50 @@ const COMPANY_INFO = {
     ogrn: '1177847381700',
     email: 'Jup.fencing@gmail.com',
     designer: 'ИП «Ригин Д. В»',
-    trademark: '«Малевич»',
-    otkName: 'РИГИН Д.В.'
+    trademark: 'Inspiration Point'
 };
 
 /**
- * Данные о катушке-сматывателе
+ * Данные о катушке-сматывателе (точный текст по шаблону)
  */
 const SPOOL_INFO = {
-    name: 'Катушка-сматыватель «Малевич»',
-    designation: 'ТУ 32.30.15-001-2044003044-2023',
-    purpose: `Катушка-сматыватель является оборудованием для вида спорта фехтование и используется для проведения тренировочного процесса и соревнований. Устройство предназначено для автоматического сматывания и размотки электрошнура фехтовальщика.`,
-    specs: [
-        { label: 'Длина шнура', value: '20 м' },
-        { label: 'Сопротивление', value: '≤ 2 Ом' },
-        { label: 'Усилие натяжения', value: '0,3-0,5 Н' },
-        { label: 'Габариты (ДхШхВ)', value: '180×120×85 мм' },
-        { label: 'Масса', value: '≤ 1,2 кг' }
-    ],
-    conditions: `Эксплуатация при температуре от -10°C до +40°C, влажности до 80% при +25°C.`,
+    name: 'Катушка-сматыватель Inspiration Point «Малевич»',
+    designation: 'ТУ 32.30.15–002-74833738-2023',
+    
+    purpose: `Катушка-сматыватель является оборудованием для вида спорта фехтование и используются для проведения тренировочного процесса и соревнований, а также для регистрации уколов при фехтовании на рапирах и саблях, в соответствии с правилами вида спорта Фехтование. Катушка-сматыватель обеспечивает автоматическое сматывание и разматывание кабеля при движении спортсмена, таким образом, чтобы исключить разрыв кабеля, перемещение катушки-сматывателя и создание помех для движения спортсменов при сматывании или разматывании кабеля.
+
+Катушка-сматыватель обеспечивает электрическое соединение между личным шнуром спортсмена и подводящим кабелем к катушке. Сматывающий механизм позволяет проводу разматываться на 20 метров и обеспечивает его обратное сматывание в корпус катушки. Катушка-сматыватель соответствует требованиям правил Международной федерации фехтования FIE (фр. Federation internationale d'escrime).`,
+    
+    specs: `Вес Изделия: 5,5 кг, габаритные размеры: 35x35x5см`,
+    
+    conditions: `Изделие может эксплуатироваться при температуре окружающей среды до плюс 40 °C, и относительной влажности воздуха до 80% при плюс 25 °C.
+
+После транспортирования или хранения при отрицательной температуре, Катушку-сматыватель необходимо выдержать при комнатной температуре не менее 6 часов перед ее применением.`,
+    
     package: [
-        { item: 'Катушка-сматыватель «Малевич»', qty: '1 шт.' },
-        { item: 'Паспорт Изделия', qty: '1 шт.' },
-        { item: 'Упаковка', qty: '1 шт.' }
+        { item: 'Катушка-сматыватель «Малевич»', designation: 'ТУ 32.30.15–002-74833738-2023', qty: '1 шт.' },
+        { item: 'Паспорт Изделия', designation: 'ТУ 32.30.15–002-74833738-2023 ПС', qty: '1 шт.' },
+        { item: 'Тара упаковочная', designation: '', qty: '1 шт.' }
     ],
+    
     usage: [
-        'снять упаковку и проверить целостность;',
-        'подключить катушку к аппарату;',
-        'вытянуть шнур и подключить к оружию;',
-        'после использования отключить шнур.'
+        'открыть коробку и распаковать катушку-сматыватель.',
+        'аккуратно и надежно установить катушку-сматыватель рядом с концом дорожки.',
+        'подключить подводящий шнур к катушке-сматывателю.'
     ],
-    warranty: `Гарантийный срок – 12 месяцев с момента отгрузки.`,
-    warrantyWarning: 'Гарантия не распространяется на механические повреждения по вине потребителя.',
-    faults: `При обнаружении неисправностей обратитесь к изготовителю.`
+    
+    warranty: `Гарантийный срок службы Катушки-сматывателя – 12 месяцев с момента отгрузки, определяемого по дате на товарной накладной на отгрузку.`,
+    
+    warrantyWarning: [
+        'по истечении гарантийного срока;',
+        'при несоблюдении потребителем условий и правил хранения, транспортирования, монтажа и эксплуатации, установленных в эксплуатационной документации.'
+    ],
+    
+    noWarranty: `Катушка-сматыватель, имеющая механические повреждения по вине потребителя и вышедшая из строя вследствие несоблюдения правил транспортирования, эксплуатации или хранения гарантийному ремонту не подлежит.`,
+    
+    faults: `При обнаружении повреждений Катушки сматывателя или ее неисправного технического состояния следует прекратить эксплуатацию Изделия и обратиться к изготовителю Изделия в случае, если неисправность произошла в период гарантийного срока эксплуатации.`,
+    
+    packaging: `Изделие стандартно упаковано в картонную коробку. По желанию Заказчика вид упаковки может быть изменен.`
 };
 
 /**
@@ -61,7 +72,7 @@ const SPOOL_INFO = {
 function formatProductionDateFull(item) {
     const month = parseInt(item.prodMonth) || new Date().getMonth() + 1;
     const year = parseInt(item.prodYear) || new Date().getFullYear();
-    return `${MONTHS[month - 1]} ${year} г.`;
+    return `${MONTHS[month - 1]} ${year}`;
 }
 
 /**
@@ -82,7 +93,7 @@ function generatePassportHTML(item) {
     <style>
         @page {
             size: A4 landscape;
-            margin: 10mm 15mm;
+            margin: 8mm 12mm;
         }
         
         * {
@@ -93,8 +104,8 @@ function generatePassportHTML(item) {
         
         body {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 10pt;
-            line-height: 1.3;
+            font-size: 9pt;
+            line-height: 1.25;
             color: #000;
             background: #fff;
         }
@@ -102,7 +113,7 @@ function generatePassportHTML(item) {
         .page {
             width: 297mm;
             height: 210mm;
-            padding: 10mm 15mm;
+            padding: 8mm 12mm;
             background: white;
             page-break-after: always;
             display: flex;
@@ -116,26 +127,20 @@ function generatePassportHTML(item) {
         .header {
             text-align: center;
             border-bottom: 2px solid #000;
-            padding-bottom: 8px;
-            margin-bottom: 10px;
+            padding-bottom: 5px;
+            margin-bottom: 8px;
         }
         
         .header h1 {
-            font-size: 16pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 5px;
-        }
-        
-        .header .product-name {
             font-size: 14pt;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         
         .content {
             display: flex;
-            gap: 15mm;
+            gap: 12mm;
             flex: 1;
         }
         
@@ -146,139 +151,109 @@ function generatePassportHTML(item) {
         }
         
         h2 {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: bold;
-            margin-top: 8px;
-            margin-bottom: 5px;
-            background: #f0f0f0;
-            padding: 3px 6px;
-            border-left: 3px solid #333;
+            margin-top: 6px;
+            margin-bottom: 3px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 2px;
         }
         
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 8px;
+        .info-row {
+            display: flex;
+            margin-bottom: 2px;
         }
         
-        .info-table td {
-            padding: 2px 4px;
-            vertical-align: top;
-            border-bottom: 1px dotted #ccc;
+        .info-label {
+            min-width: 160px;
         }
         
-        .info-table .label {
-            width: 50%;
-            color: #555;
-        }
-        
-        .info-table .value {
-            font-weight: bold;
+        .info-value {
+            font-weight: normal;
         }
         
         .manufacturer-block {
             font-size: 8pt;
-            padding: 5px;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            margin-top: 5px;
+            margin-top: 3px;
+            margin-bottom: 5px;
         }
         
         p {
             text-align: justify;
-            margin-bottom: 5px;
-            font-size: 9pt;
-        }
-        
-        .specs-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 9pt;
-        }
-        
-        .specs-table td {
-            padding: 2px 5px;
-            border-bottom: 1px dotted #ccc;
-        }
-        
-        .specs-table td:last-child {
-            font-weight: bold;
-            text-align: right;
+            margin-bottom: 4px;
         }
         
         .package-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 9pt;
+            font-size: 8pt;
+            margin: 3px 0;
         }
         
         .package-table td {
-            padding: 2px 5px;
-            border: 1px solid #999;
+            padding: 2px 4px;
+            border: 1px solid #000;
         }
         
-        ol, ul {
+        ul {
             margin-left: 15px;
-            font-size: 9pt;
+            margin-bottom: 4px;
         }
         
         li {
-            margin-bottom: 2px;
+            margin-bottom: 1px;
+        }
+        
+        .warning-text {
+            font-weight: bold;
         }
         
         .certificate-box {
             border: 2px solid #000;
             padding: 8px;
-            margin-top: auto;
-            font-size: 9pt;
+            margin-top: 5px;
         }
         
         .certificate-box h3 {
             text-align: center;
             font-size: 10pt;
-            margin-bottom: 8px;
-            text-transform: uppercase;
+            margin-bottom: 5px;
         }
         
         .signature-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
+            align-items: flex-end;
+            margin-top: 8px;
         }
         
         .signature-field {
             border-bottom: 1px solid #000;
-            min-width: 80px;
+            min-width: 100px;
             display: inline-block;
-            margin: 0 5px;
         }
         
         .sale-box {
             border: 2px solid #000;
             padding: 8px;
-            margin-top: 8px;
-            font-size: 9pt;
+            margin-top: 5px;
         }
         
         .sale-box h3 {
             text-align: center;
             font-size: 10pt;
-            margin-bottom: 8px;
-            text-transform: uppercase;
+            margin-bottom: 5px;
         }
         
-        .sale-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        
-        .footer-text {
-            text-align: center;
-            font-size: 9pt;
-            margin-top: 8px;
-            font-weight: bold;
+        .mp-circle {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #000;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7pt;
         }
         
         @media print {
@@ -288,7 +263,7 @@ function generatePassportHTML(item) {
             }
             .page {
                 margin: 0;
-                padding: 10mm 15mm;
+                padding: 8mm 12mm;
             }
         }
     </style>
@@ -297,65 +272,59 @@ function generatePassportHTML(item) {
     <div class="page">
         <!-- Заголовок -->
         <div class="header">
-            <h1>Паспорт изделия</h1>
-            <div class="product-name">${SPOOL_INFO.name}</div>
+            <h1>ПАСПОРТ ИЗДЕЛИЯ</h1>
         </div>
         
         <!-- Две колонки -->
         <div class="content">
             <!-- ЛЕВАЯ КОЛОНКА -->
             <div class="column">
-                <h2>Общие сведения</h2>
-                <table class="info-table">
-                    <tr>
-                        <td class="label">Обозначение:</td>
-                        <td class="value">${SPOOL_INFO.designation}</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Серийный номер:</td>
-                        <td class="value">№ ${item.serial}</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Дата изготовления:</td>
-                        <td class="value">${dateStr}</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Проектировщик:</td>
-                        <td class="value">${COMPANY_INFO.designer}</td>
-                    </tr>
-                    <tr>
-                        <td class="label">Торговая марка:</td>
-                        <td class="value">${COMPANY_INFO.trademark}</td>
-                    </tr>
-                </table>
+                <h2>Общие сведения об Изделии:</h2>
                 
-                <div class="manufacturer-block">
-                    <strong>Изготовитель:</strong> ${COMPANY_INFO.manufacturer}<br>
-                    ИНН ${COMPANY_INFO.inn} | ОГРН ${COMPANY_INFO.ogrn}<br>
-                    ${COMPANY_INFO.address}<br>
-                    Email: ${COMPANY_INFO.email}
+                <div class="info-row">
+                    <span class="info-label">Наименование Изделия:</span>
+                    <span class="info-value">${SPOOL_INFO.name}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Обозначение Изделия:</span>
+                    <span class="info-value">${SPOOL_INFO.designation}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Серийный номер Изделия</span>
+                    <span class="info-value">№ ${item.serial}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Дата изготовления Изделия</span>
+                    <span class="info-value">${dateStr} г.</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Предприятие-проектировщик:</span>
+                    <span class="info-value">${COMPANY_INFO.designer}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Торговая марка Изделия:</span>
+                    <span class="info-value">${COMPANY_INFO.trademark}</span>
                 </div>
                 
-                <h2>Назначение</h2>
-                <p>${SPOOL_INFO.purpose}</p>
+                <div class="manufacturer-block">
+                    <strong>Предприятие-изготовитель:</strong> ${COMPANY_INFO.manufacturer} 
+                    ИНН/КПП ${COMPANY_INFO.inn}/${COMPANY_INFO.kpp}, ${COMPANY_INFO.address}; 
+                    ОГРН ${COMPANY_INFO.ogrn}; эл. Почта ${COMPANY_INFO.email}
+                </div>
                 
-                <h2>Технические характеристики</h2>
-                <table class="specs-table">
-                    ${SPOOL_INFO.specs.map(spec => `
-                        <tr>
-                            <td>${spec.label}</td>
-                            <td>${spec.value}</td>
-                        </tr>
-                    `).join('')}
-                </table>
-                <p style="font-size: 8pt; margin-top: 5px;">${SPOOL_INFO.conditions}</p>
+                <h2>Назначение изделия и область использования</h2>
+                <p>${SPOOL_INFO.purpose.replace(/\n\n/g, '</p><p>')}</p>
                 
-                <h2>Комплект поставки</h2>
+                <h2>Рабочие параметры, свойства и режимы эксплуатации Изделия</h2>
+                <p>${SPOOL_INFO.specs}</p>
+                <p>${SPOOL_INFO.conditions.replace(/\n\n/g, '</p><p>')}</p>
+                
+                <h2>Комплектность поставки Изделия</h2>
                 <table class="package-table">
                     ${SPOOL_INFO.package.map(pkg => `
                         <tr>
-                            <td>${pkg.item}</td>
-                            <td style="text-align: center; width: 50px;">${pkg.qty}</td>
+                            <td>${pkg.item} ${pkg.designation}</td>
+                            <td style="width: 40px; text-align: center;">${pkg.qty}</td>
                         </tr>
                     `).join('')}
                 </table>
@@ -363,45 +332,51 @@ function generatePassportHTML(item) {
             
             <!-- ПРАВАЯ КОЛОНКА -->
             <div class="column">
-                <h2>Порядок эксплуатации</h2>
-                <ol>
+                <h2>Правила и порядок эксплуатации/использования</h2>
+                <p>Перед эксплуатацией Изделия необходимо:</p>
+                <ul>
                     ${SPOOL_INFO.usage.map(step => `<li>${step}</li>`).join('')}
-                </ol>
+                </ul>
                 
-                <h2>Гарантийные обязательства</h2>
+                <h2>Гарантийный срок</h2>
                 <p>${SPOOL_INFO.warranty}</p>
-                <p style="font-size: 8pt; color: #666;">${SPOOL_INFO.warrantyWarning}</p>
+                <p><span class="warning-text">Внимание!</span> Действие гарантийных обязательств прекращается:</p>
+                <ul>
+                    ${SPOOL_INFO.warrantyWarning.map(w => `<li>${w}</li>`).join('')}
+                </ul>
+                <p>${SPOOL_INFO.noWarranty}</p>
                 
-                <h2>Неисправности</h2>
+                <h2>Возможные неисправности и поломки, способы их диагностики и пути устранения</h2>
                 <p>${SPOOL_INFO.faults}</p>
+                
+                <h2>Упаковка</h2>
+                <p>${SPOOL_INFO.packaging}</p>
                 
                 <!-- Свидетельство о приемке -->
                 <div class="certificate-box">
                     <h3>Свидетельство о приемке</h3>
                     <p>
-                        Изделие серийный № <strong>${item.serial}</strong> изготовлено и принято 
-                        в соответствии с требованиями стандартов и признано годным для эксплуатации.
+                        Катушка-сматыватель серийный № <strong>${item.serial}</strong>, изготовлена и принята 
+                        в соответствии с обязательными требованиями национальных стандартов, действующей 
+                        технической документации и признан годным для эксплуатации.
                     </p>
                     <div class="signature-row">
-                        <span>ОТК <span class="signature-field"></span> /${COMPANY_INFO.otkName}/</span>
-                        <span>«___» ____________ ${currentYear} г.</span>
+                        <span>Начальник ОТК <span class="signature-field"></span> / <span class="signature-field" style="min-width: 80px;"></span> /</span>
+                        <span class="mp-circle">МП</span>
                     </div>
+                    <p style="margin-top: 8px;">«____» _______________ ${currentYear}г.</p>
                 </div>
                 
                 <!-- Отметка о продаже -->
                 <div class="sale-box">
                     <h3>Отметка о продаже</h3>
-                    <div class="sale-row">
-                        <span>Дата: «___» __________ 20___ г.</span>
-                        <span>Продавец: ${COMPANY_INFO.manufacturerShort}</span>
-                    </div>
-                    <div class="signature-row" style="margin-top: 8px;">
-                        <span>Подпись: <span class="signature-field"></span></span>
-                        <span>М.П.</span>
+                    <p>Дата продажи: «____» _______________ 20___г.</p>
+                    <p>Продавец: ${COMPANY_INFO.manufacturerShort}</p>
+                    <div class="signature-row">
+                        <span>Подпись продавца: <span class="signature-field"></span></span>
+                        <span class="mp-circle">МП</span>
                     </div>
                 </div>
-                
-                <p class="footer-text">Сделано в России 🇷🇺</p>
             </div>
         </div>
     </div>
