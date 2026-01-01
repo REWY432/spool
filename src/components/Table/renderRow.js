@@ -115,17 +115,20 @@ function renderActionsCell(itemId) {
     return `
         <td class="text-end pe-4 no-print mobile-row-content" onclick="event.stopPropagation()">
             <div class="hover-actions d-inline-block">
-                <button class="btn btn-sm btn-light border me-1" onclick="window.openEdit('${escapeHtml(itemId)}')">
+                <button class="btn btn-sm btn-light border me-1" onclick="window.openEdit('${escapeHtml(itemId)}')" title="Редактировать">
                     <i class="fas fa-pen text-secondary"></i>
                 </button>
-                <button class="btn btn-sm btn-primary shadow-sm me-1" onclick="window.copyAndOpen('${escapeHtml(itemId)}')">
+                <button class="btn btn-sm btn-primary shadow-sm me-1" onclick="window.copyAndOpen('${escapeHtml(itemId)}')" title="Копировать SN">
                     <i class="fas fa-clipboard-check"></i>
                 </button>
-                <button class="btn btn-sm btn-light border me-1" onclick="window.printLabel('${escapeHtml(itemId)}')">
+                <button class="btn btn-sm btn-light border me-1" onclick="window.printLabel('${escapeHtml(itemId)}')" title="Печать QR этикетки">
                     <i class="fas fa-qrcode text-muted"></i>
                 </button>
-                <button class="btn btn-sm btn-light border" onclick="window.printPassport('${escapeHtml(itemId)}')" title="Печать паспорта">
-                    <i class="fas fa-file-alt text-primary"></i>
+                <button class="btn btn-sm btn-light border me-1" onclick="window.printPassport('${escapeHtml(itemId)}')" title="Мини-паспорт 58x40мм">
+                    <i class="fas fa-tag text-muted"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-success border" onclick="window.printFullPassport('${escapeHtml(itemId)}')" title="Паспорт изделия A4">
+                    <i class="fas fa-file-contract"></i>
                 </button>
             </div>
         </td>

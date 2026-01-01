@@ -312,6 +312,8 @@ function toggleSelect(id) {
     } else {
         selectedIds.add(id);
     }
+    // Обновляем глобальную ссылку для модулей
+    window.selectedIds = selectedIds;
     renderTable();
 }
 window.toggleSelect = toggleSelect;
@@ -343,9 +345,13 @@ window.toggleSelectAll = toggleSelectAll;
  */
 function clearSelection() {
     selectedIds.clear();
+    window.selectedIds = selectedIds;
     renderTable();
 }
 window.clearSelection = clearSelection;
+
+// Инициализируем глобальную ссылку на selectedIds
+window.selectedIds = selectedIds;
 
 // --- ОБНОВЛЕНИЕ СЧЕТЧИКОВ ---
 
@@ -588,6 +594,7 @@ window.switchTab = switchTab;
 import './app-form.js';
 import './app-charts.js';
 import './app-print.js';
+import './app-passport.js';
 import './app-bulk.js';
 import './app-import.js';
 import './app-shipment.js';
