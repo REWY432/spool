@@ -70,8 +70,8 @@ const SPOOL_INFO = {
  * @returns {string} Отформатированная дата
  */
 function formatProductionDateFull(item) {
-    const month = parseInt(item.prodMonth) || new Date().getMonth() + 1;
-    const year = parseInt(item.prodYear) || new Date().getFullYear();
+    const month = parseInt(item.month) || new Date().getMonth() + 1;
+    const year = parseInt(item.year) || new Date().getFullYear();
     return `${MONTHS[month - 1]} ${year}`;
 }
 
@@ -82,7 +82,7 @@ function formatProductionDateFull(item) {
  */
 function generatePassportHTML(item) {
     const dateStr = formatProductionDateFull(item);
-    const currentYear = item.prodYear || new Date().getFullYear();
+    const currentYear = item.year || new Date().getFullYear();
     
     return `
 <!DOCTYPE html>
