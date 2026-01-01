@@ -96,7 +96,8 @@ export async function loadChartJS() {
  * @returns {Promise<*>} QRCode
  */
 export async function loadQRCode() {
-    return await loadLibrary(
+    // UMD библиотека - загружаем через script tag
+    return await loadScriptLibrary(
         'qrcode',
         'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
         'QRCode'
@@ -108,7 +109,8 @@ export async function loadQRCode() {
  * @returns {Promise<*>} Html5Qrcode
  */
 export async function loadHtml5QRCode() {
-    return await loadLibrary(
+    // UMD библиотека - загружаем через script tag
+    return await loadScriptLibrary(
         'html5qrcode',
         'https://unpkg.com/html5-qrcode',
         'Html5Qrcode'
@@ -120,7 +122,8 @@ export async function loadHtml5QRCode() {
  * @returns {Promise<*>} jsPDF
  */
 export async function loadJsPDF() {
-    return await loadLibrary(
+    // UMD библиотека - загружаем через script tag
+    return await loadScriptLibrary(
         'jspdf',
         'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
         'jspdf'
@@ -132,7 +135,8 @@ export async function loadJsPDF() {
  * @returns {Promise<*>} html2canvas
  */
 export async function loadHtml2Canvas() {
-    return await loadLibrary(
+    // UMD библиотека - загружаем через script tag
+    return await loadScriptLibrary(
         'html2canvas',
         'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
         'html2canvas'
@@ -144,7 +148,8 @@ export async function loadHtml2Canvas() {
  * @returns {Promise<*>} JsBarcode
  */
 export async function loadJsBarcode() {
-    return await loadLibrary(
+    // UMD библиотека - загружаем через script tag
+    return await loadScriptLibrary(
         'jsbarcode',
         'https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js',
         'JsBarcode'
