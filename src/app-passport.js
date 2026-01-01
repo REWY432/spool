@@ -103,7 +103,7 @@ function generatePassportHTML(item) {
         }
         
         body {
-            font-family: 'Times New Roman', Times, serif;
+            font-family: 'Aptos', 'Calibri', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 9pt;
             line-height: 1.25;
             color: #000;
