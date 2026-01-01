@@ -597,3 +597,6 @@ import './app-settings.js';
 // Запуск приложения
 initApp();
 
+// Экспорт для использования в других модулях
+export { showToast };
+
