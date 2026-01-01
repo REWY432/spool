@@ -332,7 +332,7 @@ function generatePassportHTML(item) {
                 </div>
                 <div class="info-row">
                     <span class="info-label">Серийный номер Изделия</span>
-                    <span class="info-value">№ ${item.serial}</span>
+                    <span class="info-value"><strong>№ ${item.serial}</strong></span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Дата изготовления Изделия</span>
