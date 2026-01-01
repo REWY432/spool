@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#f8f9fa">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Spool Manager | v1.8.9 Stable</title>
+    
+    <!-- PWA Manifest (Generic) -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiU3Bvb2wgTWFuYWdlciIsInNob3J0X25hbWUiOiJTcG9vbCBNZ3IiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzIxMjUyOSIsInRoZW1lX2NvbG9yIjoiIzIxMjUyOSIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi85MDAvOTAwNjk5LnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmcifV19">
+    
+    <!-- Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <!-- CSV Parser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- QR Scanner Lib -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QR Code Gen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Barcode Gen (JsBarcode) -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <!-- PDF Gen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd; /* Blue for Chinese (Std) */
+            --secondary-color: #6f42c1; /* Purple for Favero (U) */
+            --bg-body: #f8f9fa;
+            --bg-card: #ffffff;
+            --bg-light-override: #f8f9fa;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --card-radius: 16px;
+            --success-soft: #d1fae5;
+            --success-text: #065f46;
+            --table-hover-bg: #f1f5f9;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            --modal-header-bg: #f8f9fa;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --secondary-color: #a855f7;
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-light-override: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --success-soft: #064e3b;
+            --success-text: #6ee7b7;
+            --table-hover-bg: #2d3748;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            --modal-header-bg: #1e293b;
+            
+            --bs-body-color: var(--text-main);
+            --bs-heading-color: var(--text-main);
+            --bs-card-color: var(--text-main);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            padding-bottom: calc(90px + env(safe-area-inset-bottom)); 
+            transition: background 0.3s, color 0.3s;
+            overflow-x: hidden; 
+        }
+
+        /* --- Glass Navbar --- */
+        .navbar-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--glass-shadow);
+            z-index: 1020;
+        }
+
+        /* --- Components --- */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--card-radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .bg-light { background-color: var(--bg-light-override) !important; }
+        [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+        [data-theme="dark"] .border { border-color: var(--border-color) !important; }
+        [data-theme="dark"] .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.25) !important; }
+
+        /* Form Elements */
+        .form-control, .form-select, .input-group-text {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+        
+        [data-theme="dark"] .form-control, 
+        [data-theme="dark"] .form-select,
+        [data-theme="dark"] .input-group-text {
+            background-color: #334155;
+            border-color: #475569;
+            color: #f8fafc;
+        }
+        
+        [data-theme="dark"] .form-control::placeholder { color: #cbd5e1; opacity: 0.5; }
+        [data-theme="dark"] .form-select { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23f8fafc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); }
+
+        [data-theme="dark"] .btn-light {
+            background-color: var(--bg-light-override);
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+        [data-theme="dark"] .btn-light:hover { background-color: #475569; }
+
+        [data-theme="dark"] .dropdown-menu {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+        [data-theme="dark"] .dropdown-item { color: var(--text-main); }
+        [data-theme="dark"] .dropdown-item:hover { background-color: var(--bg-light-override); }
+
+        [data-theme="dark"] .modal-content { background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main); }
+        [data-theme="dark"] .modal-header, [data-theme="dark"] .modal-footer { border-color: var(--border-color); }
+        [data-theme="dark"] .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+
+        .table { --bs-table-color: var(--text-main); --bs-table-bg: transparent; --bs-table-border-color: var(--border-color); }
+        .table-hover tbody tr:hover { background-color: var(--table-hover-bg); }
+        [data-theme="dark"] thead.bg-light th { background-color: var(--bg-light-override); color: var(--text-main); }
+        
+        th.sortable { cursor: pointer; user-select: none; transition: background 0.2s; }
+        th.sortable:hover { background-color: rgba(0,0,0,0.05); }
+        [data-theme="dark"] th.sortable:hover { background-color: rgba(255,255,255,0.05); }
+        th.sortable i { margin-left: 5px; opacity: 0.3; }
+        th.sortable.active i { opacity: 1; color: var(--primary-color); }
+
+        .font-mono { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.5px; }
+        
+        .badge-soft-primary { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
+        [data-theme="dark"] .badge-soft-primary { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        
+        .badge-soft-secondary { background: rgba(111, 66, 193, 0.1); color: #6f42c1; }
+        [data-theme="dark"] .badge-soft-secondary { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+        
+        .fab-btn {
+            position: fixed; bottom: 90px; right: 20px;
+            width: 56px; height: 56px; border-radius: 28px;
+            background: var(--primary-color); color: white;
+            box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; border: none; z-index: 1040;
+            transition: transform 0.2s;
+            margin-bottom: env(safe-area-inset-bottom);
+        }
+        .fab-btn:hover { transform: scale(1.05); color: white; }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            display: none; justify-content: space-around; 
+            padding: 10px 0 calc(10px + env(safe-area-inset-bottom)) 0;
+            z-index: 1030;
+        }
+        .nav-item-mobile {
+            text-align: center; color: var(--text-muted); text-decoration: none;
+            font-size: 0.75rem; flex: 1; border: none; background: transparent;
+        }
+        .nav-item-mobile.active { color: var(--primary-color); font-weight: 600; }
+        .nav-item-mobile i { font-size: 1.25rem; display: block; margin-bottom: 4px; }
+
+        /* Bulk Actions Panel */
+        #bulkActionsPanel {
+            position: fixed; bottom: 20px; left: 50%; 
+            transform: translate(-50%, 400%);
+            background: #1e293b; color: white;
+            padding: 10px 20px; border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 1050; display: flex; align-items: center; gap: 15px;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        #bulkActionsPanel.visible { transform: translate(-50%, 0); }
+        [data-theme="light"] #bulkActionsPanel { background: #212529; }
+
+        /* --- MOBILE SWIPE STYLES --- */
+        @media (max-width: 991px) {
+            .bottom-nav { display: flex; }
+            .desktop-nav { display: none !important; }
+            .table thead { display: none; }
+            
+            .table tr { 
+                display: block; 
+                margin-bottom: 1rem; 
+                border: 1px solid var(--border-color); 
+                border-radius: 12px; 
+                background: var(--bg-card); 
+                overflow: hidden; 
+                position: relative; 
+                transition: transform 0.2s ease-out;
+            }
+            .table tr.swiped { transform: translateX(-140px); }
+            
+            .mobile-actions-layer {
+                position: absolute;
+                top: 0; bottom: 0; right: -140px;
+                width: 140px; 
+                display: flex;
+                z-index: 1;
+            }
+            .mobile-action-btn {
+                flex: 1;
+                display: flex; align-items: center; justify-content: center;
+                color: white; font-size: 1.2rem; border: none;
+                cursor: pointer;
+            }
+            .mobile-edit-btn { background-color: #f59e0b; }
+            .mobile-delete-btn { background-color: #ef4444; }
+
+            .mobile-row-content {
+                position: relative;
+                z-index: 2;
+                background: var(--bg-card);
+                transition: transform 0.2s ease-out;
+                width: 100%;
+            }
+
+            .table td { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 12px 15px; }
+            .table td:last-child { border-bottom: 0; background: rgba(0,0,0,0.02); }
+            .table td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); font-size: 0.75rem; margin-right: auto; }
+            .hide-on-mobile { display: none !important; }
+            
+            #bulkActionsPanel { 
+                bottom: 85px; width: 90%; max-width: 400px; justify-content: space-between;
+                margin-bottom: env(safe-area-inset-bottom);
+            }
+            .form-check-input { transform: scale(1.2); }
+            .hover-actions { opacity: 1 !important; }
+        }
+
+        .offcanvas { background-color: var(--bg-body); color: var(--text-main); }
+        .offcanvas-header { background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); }
+        .offcanvas-footer { background-color: var(--bg-card); border-top: 1px solid var(--border-color); padding: 1rem; }
+        
+        .modern-modal-header {
+            background-color: var(--modal-header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem;
+        }
+        
+        .menu-grid-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            color: var(--text-main);
+            height: 100%;
+        }
+        .menu-grid-btn:hover {
+            background: var(--bg-light-override);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .menu-grid-btn i { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
+        [data-theme="dark"] .menu-grid-btn:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        .toast-container { z-index: 3000; }
+        
+        /* Scanner UI */
+        #qr-reader {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+        #qr-reader video { object-fit: cover; }
+        
+        @media print {
+            .no-print, .fab-btn, .bottom-nav, #bulkActionsPanel { display: none !important; }
+            body { padding-bottom: 0; background: white; }
+            .card { border: none; box-shadow: none; }
+        }
+        
+        .fade-in-row { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .skeleton { background: #e2e8f0; border-radius: 6px; display: inline-block; height: 1em; width:100%;}
+        [data-theme="dark"] .skeleton { background: #334155; }
+
+        /* New Item Highlight */
+        .row-new {
+            background-color: var(--success-soft) !important;
+            transition: background-color 0.5s;
+        }
+        .row-new td {
+            background-color: transparent !important; 
+        }
+        .new-indicator {
+            height: 8px; width: 8px; 
+            background-color: var(--success-text); 
+            border-radius: 50%; 
+            display: inline-block;
+            margin-right: 6px;
+            box-shadow: 0 0 5px var(--success-text);
+        }
+        
+        .shipment-search-results {
+            position: absolute; width: 100%; max-height: 200px; overflow-y: auto;
+            z-index: 1000; background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 0 0 8px 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .shipment-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 12px; border-bottom: 1px solid var(--border-color);
+        }
+        .shipment-item:last-child { border-bottom: none; }
+
+        /* Progress Bar Styles */
+        .progress-container { margin-top: 15px; display: none; }
+    </style>
+</head>
+<body>
+
+<!-- Toast -->
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer"></div>
+
+<!-- Bulk Actions Panel -->
+<div id="bulkActionsPanel">
+    <div class="d-flex align-items-center">
+        <span class="badge bg-white text-dark me-2 rounded-pill" id="selectedCount">0</span>
+        <span class="small fw-bold">Выбрано</span>
+    </div>
+    <div class="vr bg-secondary opacity-50 mx-2"></div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-light rounded-circle" onclick="window.openBulkEdit()" title="Изменить">
+            <i class="fas fa-pen"></i>
+        </button>
+        <button class="btn btn-sm btn-light rounded-circle" onclick="window.bulkPrintPassports()" title="Печать Паспортов">
+            <i class="fas fa-file-pdf"></i>
+        </button>
+        <button class="btn btn-sm btn-light rounded-circle" onclick="window.bulkPrint()" title="Печать QR">
+            <i class="fas fa-qrcode"></i>
+        </button>
+        <button class="btn btn-sm btn-danger rounded-circle" onclick="window.bulkDeleteConfirm()" title="Удалить">
+            <i class="fas fa-trash"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-light border-0 rounded-circle" onclick="window.clearSelection()" title="Сброс">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Offcanvas Form -->
+<div class="offcanvas offcanvas-end shadow-lg" tabindex="-1" id="editorOffcanvas" data-bs-scroll="true">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title fw-bold" id="offcanvasTitle">
+            <i class="fas fa-circle-notch text-primary me-2"></i>Катушка
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" onclick="window.closeOffcanvas()"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <form id="maskForm" class="p-3">
+            <input type="hidden" id="editId">
+            <div class="card mb-3 p-3 border-0 shadow-sm">
+                <label class="small text-muted fw-bold text-uppercase mb-2">Статус</label>
+                <div class="form-check form-switch p-0 m-0 d-flex justify-content-between align-items-center">
+                    <label class="form-check-label" for="isInCRM">Внесено в CRM</label>
+                    <input class="form-check-input ms-2" type="checkbox" role="switch" id="isInCRM" style="width: 3em; height: 1.5em;">
+                </div>
+            </div>
+            
+            <div class="card mb-3 p-3 border-0 shadow-sm">
+                <label class="small text-muted fw-bold text-uppercase mb-2">Идентификация</label>
+                <div class="mb-3">
+                    <label class="form-label small d-flex justify-content-between">
+                        Серийный номер
+                        <span class="badge bg-light text-primary border cursor-pointer" onclick="window.updateSmartSerial()" title="Пересчитать по формуле"><i class="fas fa-magic me-1"></i>Авто</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                        <input type="text" class="form-control fw-bold font-mono fs-5" id="serialNumber" placeholder="M3/2023.457" required autocomplete="off">
+                    </div>
+                </div>
+                
+                <div class="row g-2 mb-3">
+                     <div class="col-8">
+                        <label class="form-label small text-muted">Префикс</label>
+                        <input type="text" class="form-control font-mono" id="serialPrefix" value="M3/2023.">
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label small text-muted">Сквозной №</label>
+                         <div class="input-group">
+                             <input type="number" class="form-control" id="globalSeq" required oninput="window.checkSeqUniqueness()">
+                             <button type="button" class="btn btn-outline-secondary" onclick="window.setAutoSeq()" title="Сгенерировать">
+                                <i class="fas fa-sync-alt"></i>
+                             </button>
+                         </div>
+                    </div>
+                    <div class="col-12">
+                        <div id="seqWarning" class="small text-danger fw-bold d-none"><i class="fas fa-exclamation-triangle me-1"></i>Этот номер уже занят!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3 p-3 border-0 shadow-sm">
+                <label class="small text-muted fw-bold text-uppercase mb-2">Спецификация</label>
+                
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small">Провод</label>
+                        <select class="form-select" id="wireType" onchange="window.handleWireChange('standard')">
+                            <option value="Китайский">Китайский</option>
+                            <option value="Favero">Favero</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Модель (Год)</label>
+                        <select class="form-select bg-light" id="spoolModel" disabled>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                <!-- Added Date Section -->
+                 <div class="row g-2 mb-3">
+                    <div class="col-7">
+                        <label class="form-label small">Месяц</label>
+                        <select class="form-select" id="prodMonth">
+                            <!-- Months populated by JS -->
+                        </select>
+                    </div>
+                    <div class="col-5">
+                        <label class="form-label small">Год</label>
+                        <input type="number" class="form-control" id="prodYear">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="form-label small">Примечания</label>
+                    <textarea class="form-control" id="notes" rows="3"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="offcanvas-footer d-flex gap-2">
+        <button type="button" class="btn btn-light text-danger flex-grow-1" id="deleteBtnInForm" onclick="window.deleteFromForm()" style="display:none;">
+            <i class="fas fa-trash-alt me-2"></i>Удалить
+        </button>
+        <button type="button" class="btn btn-primary flex-grow-1" onclick="window.saveRecord()">
+            <i class="fas fa-save me-2"></i>Сохранить
+        </button>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Настройки моделей</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-light small border mb-3">
+                    <i class="fas fa-info-circle text-primary me-2"></i>Добавьте год и EAN штрихкоды.
+                </div>
+                <div id="settingsList" class="d-flex flex-column gap-2"></div>
+                <button class="btn btn-sm btn-outline-primary mt-3 w-100" onclick="window.addSettingRow()">
+                    <i class="fas fa-plus"></i> Добавить год
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary w-100" onclick="window.saveSettings()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Header Desktop -->
+<nav class="navbar navbar-expand-lg sticky-top navbar-glass px-3 mb-3 no-print">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width:36px;height:36px;">
+                <i class="fas fa-circle-notch"></i>
+            </div>
+            <span style="color: var(--text-main)">Катушки<span class="text-primary">4F</span></span>
+        </a>
+        
+        <div class="d-flex align-items-center gap-2 desktop-nav">
+             <div id="connectionStatus" class="d-none d-md-flex align-items-center small me-3 px-2 py-1 rounded bg-light border">
+                <span class="spinner-border spinner-border-sm me-2"></span> Init...
+            </div>
+            
+            <button onclick="window.openShipmentModal()" class="btn btn-primary rounded-circle border shadow-sm" title="Буфер отгрузки">
+                <i class="fas fa-truck-loading text-white"></i>
+            </button>
+            
+            <button onclick="window.openBulkAdd()" class="btn btn-light rounded-circle border" title="Массовое добавление"><i class="fas fa-layer-group text-primary"></i></button>
+            <button onclick="window.openSettings()" class="btn btn-light rounded-circle border" title="Настройки"><i class="fas fa-cog text-secondary"></i></button>
+            <div class="vr bg-secondary opacity-25 mx-1"></div>
+            <button onclick="window.toggleTheme()" class="btn btn-light rounded-circle border" title="Тема"><i class="fas fa-moon" id="themeIcon"></i></button>
+        </div>
+        
+        <!-- Mobile Header Actions -->
+        <div class="d-flex d-lg-none gap-2">
+             <button onclick="window.openShipmentModal()" class="btn btn-sm btn-primary rounded-circle border"><i class="fas fa-truck-loading"></i></button>
+             <button onclick="window.openBulkAdd()" class="btn btn-sm btn-light rounded-circle border"><i class="fas fa-layer-group text-primary"></i></button>
+             <button onclick="window.toggleTheme()" class="btn btn-sm btn-light rounded-circle border"><i class="fas fa-moon"></i></button>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-3 px-md-4 pb-5">
+    <div class="tab-content" id="mainTabContent">
+        <!-- INVENTORY -->
+        <div class="tab-pane fade show active" id="inventory" role="tabpanel">
+            <!-- Stats -->
+            <div class="d-flex gap-3 overflow-auto pb-2 mb-3 no-scrollbar" style="scrollbar-width: none;">
+                <div class="card p-3 flex-grow-1 shadow-sm" style="min-width: 130px; border-left: 4px solid #198754;">
+                    <small class="text-muted fw-bold text-uppercase">Всего</small>
+                    <div class="fs-4 fw-bold mt-1" id="totalCount"><div class="skeleton" style="width: 30px;"></div></div>
+                </div>
+                <div class="card p-3 flex-grow-1 shadow-sm" style="min-width: 130px; border-left: 4px solid var(--primary-color);">
+                    <small class="text-muted fw-bold text-uppercase">Китайский</small>
+                    <div class="fs-4 fw-bold mt-1 text-primary" id="stdCount"><div class="skeleton" style="width: 30px;"></div></div>
+                </div>
+                <div class="card p-3 flex-grow-1 shadow-sm" style="min-width: 130px; border-left: 4px solid var(--secondary-color);">
+                    <small class="text-muted fw-bold text-uppercase">Favero</small>
+                    <div class="fs-4 fw-bold mt-1" style="color: var(--secondary-color)" id="uCount"><div class="skeleton" style="width: 30px;"></div></div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-3 border-0 shadow-sm no-print">
+                <div class="card-body p-2">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-12 col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="fas fa-search"></i></span>
+                                <input type="text" id="searchSerial" class="form-control border-start-0 border-end-0" placeholder="Поиск... (Ctrl+F)" onkeyup="window.debouncedRender()">
+                                <button class="btn btn-light border" type="button" onclick="window.openScanner()" title="Сканировать QR"><i class="fas fa-qrcode text-primary"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <select id="filterModel" class="form-select form-select-sm border-0" onchange="window.renderTable()">
+                                <option value="">Провод: Все</option>
+                                <option value="Китайский">Китайский</option>
+                                <option value="Favero">Favero</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <select id="filterCRM" class="form-select form-select-sm border-0" onchange="window.renderTable()">
+                                <option value="">CRM: Все</option>
+                                <option value="1">Внесено</option>
+                                <option value="0">Не внесено</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-2 text-end d-none d-md-block">
+                            <span class="text-muted small me-2" id="pageInfoDesktop"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4" style="width: 40px">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll" onclick="window.toggleSelectAll()">
+                                    </div>
+                                </th>
+                                <th class="sortable" onclick="window.handleSort('globalSeq')" style="width: 80px;">№ <i class="fas fa-sort small"></i></th>
+                                <th class="sortable" onclick="window.handleSort('serial')">Катушка / SN <i class="fas fa-sort small"></i></th>
+                                <th class="sortable" onclick="window.handleSort('wireType')">Провод <i class="fas fa-sort small"></i></th>
+                                <th class="sortable" onclick="window.handleSort('spoolModel')">Модель <i class="fas fa-sort small"></i></th>
+                                <th>Прим.</th>
+                                <th class="text-end pe-4 no-print" style="min-width: 140px;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                
+                <div id="emptyState" class="text-center py-5 d-none">
+                    <div class="mb-3"><div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;"><i class="fas fa-circle-notch fa-2x text-muted opacity-50"></i></div></div>
+                    <h5 class="fw-bold text-muted">Список пуст</h5>
+                    <p class="text-muted small mb-3">В базе данных пока нет катушек.</p>
+                    <button class="btn btn-primary btn-sm px-4 rounded-pill shadow-sm" onclick="window.openCreate()"><i class="fas fa-plus me-1"></i> Добавить (N)</button>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light no-print">
+                    <div class="d-flex align-items-center">
+                        <select class="form-select form-select-sm border-0 bg-transparent text-muted" style="width:auto; cursor:pointer;" onchange="window.changePageSize(this.value)">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span class="small text-muted ms-1 d-none d-sm-inline">/ стр.</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-outline-secondary border-0" onclick="window.changePage(-1)"><i class="fas fa-chevron-left"></i></button>
+                        <span class="small fw-bold text-muted" id="pageNumberDisplay">1</span>
+                        <button class="btn btn-sm btn-outline-secondary border-0" onclick="window.changePage(1)"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS -->
+        <div class="tab-pane fade" id="analytics" role="tabpanel">
+             <div class="row g-3 justify-content-center">
+                 <div class="col-md-6 col-lg-5">
+                     <div class="card p-3 h-100 shadow-sm">
+                         <h6 class="text-uppercase text-muted small fw-bold mb-3">Доли проводов</h6>
+                         <div style="height: 300px;"><canvas id="modelPieChart"></canvas></div>
+                     </div>
+                 </div>
+             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="fab-btn" onclick="window.openCreate()" title="Добавить (N)">
+    <i class="fas fa-plus"></i>
+</button>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+    <button class="nav-item-mobile active" onclick="window.switchTab('inventory')" id="nav-inv">
+        <i class="fas fa-list"></i> Склад
+    </button>
+    <button class="nav-item-mobile" onclick="window.switchTab('analytics')" id="nav-stat">
+        <i class="fas fa-chart-pie"></i> Инфо
+    </button>
+    <button class="nav-item-mobile" onclick="window.openMenuModal()">
+        <i class="fas fa-bars"></i> Меню
+    </button>
+</nav>
+
+<!-- Modals -->
+<!-- SHIPMENT MODAL -->
+<div class="modal fade" id="shipmentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content" style="height: 90vh;">
+            <div class="modal-header modern-modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-truck-loading me-2"></i>Буфер отгрузки
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-light p-0 d-flex flex-column">
+                
+                <!-- Search Section -->
+                <div class="p-3 bg-white shadow-sm border-bottom position-relative">
+                    <div class="input-group">
+                        <span class="input-group-text border-end-0 bg-transparent text-muted"><i class="fas fa-search"></i></span>
+                        <input type="text" id="shipmentSearchInput" class="form-control border-start-0" placeholder="Поиск (SN или №)..." onkeyup="window.handleShipmentSearch(this.value)" onkeydown="window.handleShipmentKey(event)">
+                        <button class="btn btn-light border" onclick="document.getElementById('shipmentSearchInput').value=''; window.handleShipmentSearch('')"><i class="fas fa-times"></i></button>
+                    </div>
+                    <!-- Search Results Dropdown -->
+                    <div id="shipmentSearchResults" class="shipment-search-results d-none"></div>
+                </div>
+
+                <!-- Selected List -->
+                <div class="flex-grow-1 overflow-auto p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <h6 class="text-uppercase text-muted small fw-bold mb-1">Выбрано: <span id="shipmentCount">0</span></h6>
+                            <div id="shipmentSummary" class="d-flex flex-wrap gap-2 small"></div>
+                        </div>
+                        <button class="btn btn-sm btn-link text-danger text-decoration-none" onclick="window.clearShipmentBuffer()">Очистить всё</button>
+                    </div>
+                    <div id="shipmentBufferList" class="d-flex flex-column gap-2">
+                        <div class="text-center text-muted py-5 mt-5">
+                            <i class="fas fa-box-open fa-3x mb-3 opacity-50"></i>
+                            <p>Список пуст</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-white border-top">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="window.printShipmentList()">
+                    <i class="fas fa-print me-2"></i>Печать листа
+                </button>
+                <button type="button" class="btn btn-primary" onclick="window.copyShipmentList()">
+                    <i class="fas fa-copy me-2"></i>Скопировать список
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Импорт CSV</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="importMsg" class="mb-2"></p>
+                <div class="alert alert-light small mb-0 border">
+                    <i class="fas fa-info-circle text-primary me-1"></i>
+                    Формат CSV: <strong>Serial, Model, Notes</strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal">Отмена</button>
+                <button class="btn btn-primary" onclick="window.confirmImport()">
+                    <span id="importBtnText">Загрузить в БД</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1"><div class="modal-dialog modal-sm modal-dialog-centered"><div class="modal-content"><div class="modal-body text-center p-4"><i class="fas fa-trash-alt fa-3x text-warning mb-3"></i><h5 id="deleteTitle">Удалить?</h5><p class="small text-muted" id="deleteMsg">Это действие нельзя отменить.</p><div class="d-flex justify-content-center gap-2"><button class="btn btn-light" data-bs-dismiss="modal">Нет</button><button class="btn btn-danger" onclick="window.executeDelete()">Да, удалить</button></div></div></div></div></div>
+
+<!-- MAIN MENU MODAL -->
+<div class="modal fade" id="menuModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Меню</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="menu-grid-btn" onclick="window.openBulkAdd(); bootstrap.Modal.getInstance(document.getElementById('menuModal')).hide();">
+                            <i class="fas fa-layer-group text-success mb-2"></i>
+                            <div class="small fw-bold">Массовое</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="menu-grid-btn" onclick="window.openShipmentModal(); bootstrap.Modal.getInstance(document.getElementById('menuModal')).hide();">
+                            <i class="fas fa-truck-loading text-warning mb-2"></i>
+                            <div class="small fw-bold">Отгрузка</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="menu-grid-btn" onclick="window.exportCSV(); bootstrap.Modal.getInstance(document.getElementById('menuModal')).hide();">
+                            <i class="fas fa-file-csv text-info mb-2"></i>
+                            <div class="small fw-bold">Экспорт</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="menu-grid-btn" onclick="document.getElementById('fileInput').click(); bootstrap.Modal.getInstance(document.getElementById('menuModal')).hide();">
+                            <i class="fas fa-file-import text-secondary mb-2"></i>
+                            <div class="small fw-bold">Импорт</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                         <button class="menu-grid-btn w-100" onclick="window.openSettings(); bootstrap.Modal.getInstance(document.getElementById('menuModal')).hide();">
+                            <i class="fas fa-cog text-primary mb-2"></i>
+                            <div class="small fw-bold">Настройки</div>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <div class="menu-grid-btn" onclick="window.clearLocalData()">
+                            <i class="fas fa-eraser text-danger mb-2"></i>
+                            <div class="small fw-bold">Сброс кэша</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Hidden File Input for Import -->
+<input type="file" id="fileInput" style="display: none;" onchange="window.importData(this)" accept=".csv">
+
+<!-- Bulk Edit Modal -->
+<div class="modal fade" id="bulkEditModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Массовое изменение</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p class="small text-muted mb-3">Изменения коснутся <strong id="bulkCountDisplay">0</strong> записей.</p><form id="bulkEditForm"><div class="row g-3"><div class="col-12"><label class="form-label small">Провод</label><select class="form-select form-select-sm" id="bulkWireType" onchange="window.handleWireChange('bulkEdit')"><option value="">(Не менять)</option><option value="Китайский">Китайский</option><option value="Favero">Favero</option></select></div><div class="col-12"><label class="form-label small">Модель (Год)</label><select class="form-select form-select-sm" id="bulkSpoolModel" disabled><option value="">(Не менять)</option></select></div><div class="col-12"><label class="form-label small">Статус CRM</label><select class="form-select form-select-sm" id="bulkCRMSelect"><option value="">(Не менять)</option><option value="1">Установить "Внесено"</option><option value="0">Установить "Не внесено"</option></select></div></div></form></div><div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Отмена</button><button type="button" class="btn btn-primary" onclick="window.submitBulkEdit()">Применить</button></div></div></div></div>
+
+<!-- Bulk Add Modal -->
+<div class="modal fade" id="bulkAddModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-layer-group text-primary me-2"></i>Массовое добавление</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted">Создание серии катушек.</p>
+                <form id="bulkAddForm">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Количество <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="baCount" value="1" min="1" max="100" required>
+                    </div>
+                    <hr class="dropdown-divider my-3">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label small">Префикс (M3/2023.)</label>
+                            <input type="text" class="form-control form-control-sm" id="baPrefix" value="M3/2023.">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Начальный номер</label>
+                            <input type="number" class="form-control form-control-sm" id="baStartNum" placeholder="100">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Провод</label>
+                            <select class="form-select form-select-sm" id="baWireType" onchange="window.handleWireChange('bulkAdd')">
+                                <option value="Китайский">Китайский</option>
+                                <option value="Favero">Favero</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Модель (Год)</label>
+                            <select class="form-select form-select-sm" id="baSpoolModel" disabled></select>
+                        </div>
+                        <!-- New Fields for Date in Bulk Add -->
+                        <div class="col-7">
+                            <label class="form-label small">Месяц изготовления</label>
+                            <select class="form-select form-select-sm" id="baMonth"></select>
+                        </div>
+                        <div class="col-5">
+                            <label class="form-label small">Год</label>
+                            <input type="number" class="form-control form-control-sm" id="baYear">
+                        </div>
+                    </div>
+                    <!-- Progress Bar for Bulk Add -->
+                    <div class="progress-container" id="baProgressContainer">
+                        <div class="d-flex justify-content-between small text-muted mb-1">
+                            <span>Создание записей...</span>
+                            <span id="baProgressText">0%</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div id="baProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal" id="baCancelBtn">Отмена</button>
+                <button type="button" class="btn btn-primary" onclick="window.executeBulkAdd()" id="baSubmitBtn">Создать</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scanner Modal -->
+<div class="modal fade" id="scannerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-0">
+            <div class="modal-body p-0 text-center position-relative">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-3" data-bs-dismiss="modal"></button>
+                <div id="qr-reader" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script type="module">
+    // --- FIREBASE LOGIC ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, enableIndexedDbPersistence, setDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+    let app, dbRef, auth;
+    let offcanvasInstance;
+    let qrScanner = null;
+    let undoTimer = null; 
+    window.shipmentBuffer = []; 
+    let isAutoSerialEnabled = true; 
+    
+    // APP SETTINGS STATE
+    window.appSettings = {
+        models: [
+            { year: "2024", ean: "2000000010632" },
+            { year: "2025", ean: "2000000040783" }
+        ]
+    };
+    const months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+
+    // State Variables
+    window.localDB = []; 
+    let isLoading = true;
+    window.pendingImportData = []; 
+    let currentPage = 1;
+    let itemsPerPage = 10;
+    let recordToDeleteId = null;
+    let isBulkDelete = false;
+    let selectedIds = new Set();
+    let renderTimer = null;
+    let modelPieInstance = null;
+    let currentSort = { field: 'globalSeq', direction: 'desc' };
+
+    // --- GLOBAL UTILS ---
+    function showToast(msg, type='success') {
+        const bg = type==='error'?'bg-danger': (type === 'warning' ? 'bg-warning text-dark' : 'bg-success');
+        const el = document.createElement('div'); el.className = `toast show align-items-center ${type==='error'||type==='success'?'text-white':''} ${bg} border-0 shadow`;
+        el.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button class="btn-close ${type==='warning'?'':'btn-close-white'} me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+        document.getElementById('toastContainer').appendChild(el); setTimeout(()=>el.remove(), 4000);
+    }
+    window.showToast = showToast;
+    
+    function updateConnectionStatus(online) { 
+        const el = document.getElementById('connectionStatus'); 
+        if(el) el.innerHTML = online ? '<span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>Online</span>' : '<span class="text-danger">Offline</span>'; 
+    }
+    window.updateConnectionStatus = updateConnectionStatus;
+
+    // --- CORE LOGIC FUNCTIONS ---
+    function generateBarcodeSVG(code) {
+        if(!code) return "";
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        try {
+            JsBarcode(svg, code, {
+                format: "EAN13",
+                width: 1.4,
+                height: 25,
+                displayValue: true,
+                fontSize: 12,
+                margin: 0
+            });
+            return new XMLSerializer().serializeToString(svg);
+        } catch(e) {
+            console.error("Barcode gen error", e);
+            return "";
+        }
+    }
+    window.generateBarcodeSVG = generateBarcodeSVG;
+
+    // --- HELPER: Lazy Offcanvas Init ---
+    function getOffcanvas() {
+        if (!offcanvasInstance) {
+            const el = document.getElementById('editorOffcanvas');
+            if (el && window.bootstrap) {
+                offcanvasInstance = new bootstrap.Offcanvas(el);
+            }
+        }
+        return offcanvasInstance;
+    }
+
+    // --- TABLE LOGIC ---
+    function getPageData() {
+        const search = (document.getElementById('searchSerial').value || "").toLowerCase();
+        const fModel = document.getElementById('filterModel').value;
+        const fCRM = document.getElementById('filterCRM').value;
+        
+        let filtered = window.localDB.filter(i => {
+            const wire = i.wireType || (i.model && i.model.includes('У') ? 'Favero' : 'Китайский');
+            
+            const matchesSearch = (i.serial.toLowerCase().includes(search) || (i.notes||"").toLowerCase().includes(search));
+            const matchesModel = fModel === "" || wire === fModel;
+            let matchesCRM = true;
+            if (fCRM === '1') matchesCRM = !!i.isInCRM;
+            if (fCRM === '0') matchesCRM = !i.isInCRM;
+            return matchesSearch && matchesModel && matchesCRM;
+        });
+
+        filtered.sort((a, b) => {
+            let valA, valB;
+            if (currentSort.field === 'serial') { valA = a.serial.toLowerCase(); valB = b.serial.toLowerCase(); } 
+            else if (currentSort.field === 'wireType') { 
+                valA = (a.wireType || a.model || "").toLowerCase(); 
+                valB = (b.wireType || b.model || "").toLowerCase(); 
+            } 
+            else if (currentSort.field === 'spoolModel') {
+                valA = a.spoolModel || "0";
+                valB = b.spoolModel || "0";
+            }
+            else { valA = a.globalSeq || 0; valB = b.globalSeq || 0; }
+            if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+            if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
+        if(currentPage > totalPages) currentPage = 1;
+        const start = (currentPage - 1) * itemsPerPage;
+        return filtered.slice(start, start + itemsPerPage);
+    }
+    
+    // --- MOBILE SWIPE IMPLEMENTATION ---
+    function addSwipeListeners() {
+        if(window.innerWidth > 991) return; 
+        const rows = document.querySelectorAll('.table tr');
+        
+        rows.forEach(row => {
+            let startX, currentX;
+            const content = row.querySelectorAll('.mobile-row-content'); 
+            
+            row.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+            }, {passive: true});
+            
+            row.addEventListener('touchmove', (e) => {
+                currentX = e.touches[0].clientX;
+                const diff = currentX - startX;
+                if(diff < 0 && diff > -160) {
+                    content.forEach(el => el.style.transform = `translateX(${diff}px)`);
+                }
+            }, {passive: true});
+            
+            row.addEventListener('touchend', (e) => {
+                const diff = currentX - startX;
+                if(diff < -70) { 
+                    content.forEach(el => el.style.transform = `translateX(-140px)`);
+                } else {
+                    content.forEach(el => el.style.transform = `translateX(0)`);
+                }
+            });
+        });
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        if(isLoading) { tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center">Загрузка...</td></tr>'; return; }
+
+        const pageData = getPageData();
+        const todayStr = new Date().toDateString(); 
+        
+        document.querySelectorAll('th.sortable i').forEach(i => i.className = 'fas fa-sort small');
+        const activeHeader = document.querySelector(`th[onclick="window.handleSort('${currentSort.field}')"]`);
+        if(activeHeader) activeHeader.querySelector('i').className = currentSort.direction === 'asc' ? 'fas fa-sort-up text-primary' : 'fas fa-sort-down text-primary';
+
+        document.getElementById('emptyState').classList.toggle('d-none', pageData.length > 0);
+        document.getElementById('pageNumberDisplay').innerText = currentPage;
+        document.getElementById('pageInfoDesktop').innerText = `Стр. ${currentPage}`;
+
+        const selectAllBox = document.getElementById('selectAll');
+        if (pageData.length > 0) {
+            const allSelected = pageData.every(item => selectedIds.has(item.id));
+            selectAllBox.checked = allSelected;
+            selectAllBox.indeterminate = !allSelected && pageData.some(item => selectedIds.has(item.id));
+        } else { selectAllBox.checked = false; selectAllBox.indeterminate = false; }
+
+        const rowsHTML = pageData.map(item => {
+            const wire = item.wireType || (item.model && item.model.includes('У') ? 'Favero' : 'Китайский');
+            const modelColor = wire === 'Favero' ? 'secondary' : 'primary';
+            const crmIcon = item.isInCRM ? '<i class="fas fa-check-circle text-success"></i>' : '<i class="far fa-circle text-muted opacity-50"></i>';
+            const isChecked = selectedIds.has(item.id);
+
+            let isNew = false;
+            if (item.createdAt) {
+                const d = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
+                if (d.toDateString() === todayStr) isNew = true;
+            }
+
+            let rowClass = "fade-in-row";
+            if (isChecked) rowClass += " bg-light";
+            else if (isNew) rowClass += " row-new";
+
+            const serialDisplay = isNew 
+                ? `<span class="new-indicator" title="Создано сегодня"></span><span class="fw-bold font-mono text-primary">${item.serial}</span>` 
+                : `<span class="fw-bold font-mono text-primary">${item.serial}</span>`;
+            
+            const displayModel = item.spoolModel || "2024";
+
+            return `
+            <tr id="row-${item.id}" onclick="window.openEdit('${item.id}')" style="cursor: pointer;" class="${rowClass}">
+                
+                 <div class="mobile-actions-layer d-lg-none">
+                    <div class="mobile-action-btn mobile-edit-btn" onclick="event.stopPropagation(); window.openEdit('${item.id}')"><i class="fas fa-pen"></i></div>
+                    <div class="mobile-action-btn mobile-delete-btn" onclick="event.stopPropagation(); window.deleteRecordDirect('${item.id}')"><i class="fas fa-trash"></i></div>
+                </div>
+
+                <td class="ps-4 mobile-row-content" style="width: 40px" onclick="event.stopPropagation()">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" onchange="window.toggleSelect('${item.id}')" ${isChecked ? 'checked' : ''}>
+                    </div>
+                </td>
+                <td class="font-mono text-muted small mobile-row-content" data-label="№">#${item.globalSeq || '-'}</td>
+                <td class="mobile-row-content" data-label="Катушка">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 fs-5">${crmIcon}</div>
+                        <div class="rounded-circle bg-${modelColor} bg-opacity-10 text-${modelColor} d-flex align-items-center justify-content-center me-3 d-none d-sm-flex" style="width:40px;height:40px;">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div>
+                            ${serialDisplay}
+                            <div class="small text-muted d-block d-sm-none">${wire}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="hide-on-mobile mobile-row-content" data-label="Провод">
+                    <span class="badge badge-soft-${modelColor}">${wire}</span>
+                </td>
+                <td class="mobile-row-content" data-label="Модель">
+                    <span class="badge bg-light text-dark border">${displayModel}</span>
+                </td>
+                <td class="mobile-row-content" data-label="Прим.">
+                    <span class="text-muted small">${(item.notes || "").substring(0,20)}</span>
+                </td>
+                <td class="text-end pe-4 no-print mobile-row-content" onclick="event.stopPropagation()">
+                    <div class="hover-actions d-inline-block">
+                        <button class="btn btn-sm btn-light border me-1" onclick="window.openEdit('${item.id}')"><i class="fas fa-pen text-secondary"></i></button>
+                        <button class="btn btn-sm btn-primary shadow-sm me-1" onclick="window.copyAndOpen('${item.id}')"><i class="fas fa-clipboard-check"></i></button>
+                        <button class="btn btn-sm btn-light border me-1" onclick="window.printLabel('${item.id}')"><i class="fas fa-qrcode text-muted"></i></button>
+                        <button class="btn btn-sm btn-light border" onclick="window.printPassport('${item.id}')" title="Печать паспорта"><i class="fas fa-file-alt text-primary"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+        
+        tbody.innerHTML = rowsHTML.join('');
+        addSwipeListeners();
+
+        const bulkPanel = document.getElementById('bulkActionsPanel');
+        if (selectedIds.size > 0) {
+            bulkPanel.classList.add('visible');
+            document.getElementById('selectedCount').innerText = selectedIds.size;
+        } else { bulkPanel.classList.remove('visible'); }
+        updateCharts();
+    }
+    window.renderTable = renderTable;
+
+    function debouncedRender() { clearTimeout(renderTimer); renderTimer = setTimeout(renderTable, 300); }
+    window.debouncedRender = debouncedRender;
+
+    function handleSort(field) {
+        if (currentSort.field === field) currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        else { currentSort.field = field; currentSort.direction = 'asc'; }
+        renderTable();
+    }
+    window.handleSort = handleSort;
+
+    function changePageSize(val) { itemsPerPage = parseInt(val); currentPage = 1; renderTable(); }
+    window.changePageSize = changePageSize;
+    
+    function changePage(d) { currentPage += d; renderTable(); }
+    window.changePage = changePage;
+
+    function toggleSelect(id) {
+        if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+        renderTable();
+    }
+    window.toggleSelect = toggleSelect;
+
+    function toggleSelectAll() {
+        const checkbox = document.getElementById('selectAll');
+        const isChecked = checkbox.checked;
+        const pageData = getPageData();
+        pageData.forEach(item => { if (isChecked) selectedIds.add(item.id); else selectedIds.delete(item.id); });
+        renderTable();
+    }
+    window.toggleSelectAll = toggleSelectAll;
+
+    function clearSelection() { selectedIds.clear(); renderTable(); }
+    window.clearSelection = clearSelection;
+
+    function updateCounts() {
+         const totalEl = document.getElementById('totalCount');
+         const stdEl = document.getElementById('stdCount');
+         const uEl = document.getElementById('uCount');
+         
+         if (totalEl) totalEl.innerText = window.localDB.length;
+         
+         const getWire = (x) => {
+             let w = x.wireType || (x.model && x.model.includes('У') ? 'Favero' : 'Китайский');
+             if(w === "Стандарт") w = "Китайский";
+             if(w === "У") w = "Favero";
+             return w;
+         };
+         
+         if (stdEl) stdEl.innerText = window.localDB.filter(x=> getWire(x)==='Китайский').length;
+         if (uEl) uEl.innerText = window.localDB.filter(x=> getWire(x)==='Favero').length;
+    }
+    window.updateCounts = updateCounts;
+
+    // --- SETUP & INIT ---
+    function setupListener() {
+        if (!dbRef) return;
+        const q = query(collection(dbRef, "spools")); 
+        onSnapshot(q, (snapshot) => {
+            window.localDB = snapshot.docs.map(d => ({ ...d.data(), id: d.id }));
+            isLoading = false; 
+            renderTable();
+            updateCounts();
+        }, (error) => { 
+            console.error("Firestore Listener Error:", error); 
+            showToast("Ошибка базы данных: " + error.code, "error"); 
+        });
+        
+        onSnapshot(doc(dbRef, "metadata", "config"), (doc) => {
+             if (doc.exists()) {
+                 window.appSettings = doc.data();
+             } else {
+                 setDoc(doc.ref, window.appSettings);
+             }
+             updateDropdowns();
+        });
+    }
+    window.setupListener = setupListener;
+    
+    function updateDropdowns() {
+        const models = window.appSettings.models || [];
+        const options = models.map(m => `<option value="${m.year}">${m.year}</option>`).join('');
+        
+        const selects = ['spoolModel', 'baSpoolModel'];
+        selects.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                const currentVal = el.value;
+                el.innerHTML = options;
+                if(currentVal && models.some(m => m.year === currentVal)) el.value = currentVal;
+            }
+        });
+
+        const bulkModelEl = document.getElementById('bulkSpoolModel');
+        if(bulkModelEl) {
+            bulkModelEl.innerHTML = '<option value="">(Не менять)</option>' + options;
+        }
+        
+        handleWireChange('standard');
+
+        const monthSelects = ['prodMonth', 'baMonth'];
+        monthSelects.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.innerHTML = months.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+            }
+        });
+    }
+    window.updateDropdowns = updateDropdowns;
+
+    function handleWireChange(mode) {
+        let wireEl, modelEl;
+        
+        if (mode === 'bulkAdd') {
+            wireEl = document.getElementById('baWireType');
+            modelEl = document.getElementById('baSpoolModel');
+        } else if (mode === 'bulkEdit') {
+            wireEl = document.getElementById('bulkWireType');
+            modelEl = document.getElementById('bulkSpoolModel');
+        } else {
+            wireEl = document.getElementById('wireType');
+            modelEl = document.getElementById('spoolModel');
+        }
+
+        if (!wireEl || !modelEl) return;
+        
+        const wireVal = wireEl.value;
+        
+        if (wireVal === 'Китайский') {
+            modelEl.value = '2024';
+            modelEl.disabled = false;
+        } else if (wireVal === 'Favero') {
+            modelEl.value = '2025';
+            modelEl.disabled = false;
+        } else if (mode === 'bulkEdit' && wireVal === '') {
+            modelEl.value = '';
+            modelEl.disabled = true;
+        }
+        
+        if (mode === 'standard' && document.getElementById('serialNumber')) {
+            updateSmartSerial();
+        }
+    }
+    window.handleWireChange = handleWireChange;
+
+    async function initApp() {
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyBH0rLK0bi0zSkjI7fEhUCXoQfphRr-_Xg",
+                authDomain: "reels4f.firebaseapp.com",
+                projectId: "reels4f",
+                storageBucket: "reels4f.firebasestorage.app",
+                messagingSenderId: "646479694296",
+                appId: "1:646479694296:web:160adcb14d32c6f8a20aad",
+                measurementId: "G-M4YN1LGVNR"
+            };
+
+            app = initializeApp(firebaseConfig);
+            dbRef = getFirestore(app);
+            auth = getAuth(app);
+            
+            try { await enableIndexedDbPersistence(dbRef); } catch (e) { console.warn("Persistence disabled"); }
+            
+            try {
+                await signInAnonymously(auth);
+            } catch (authError) {
+                console.warn("Auth failed, attempting guest access:", authError);
+                showToast("Ошибка входа: " + authError.code, "warning"); 
+            }
+
+            updateConnectionStatus(true);
+            setupListener();
+            initKeyboardShortcuts();
+            initSerialGenerator(); 
+            
+            document.getElementById('bulkActionsPanel').classList.remove('visible');
+            selectedIds.clear();
+        } catch (e) {
+            console.error("Init Error:", e);
+            updateConnectionStatus(false);
+            showToast('Ошибка инициализации: ' + e.message, 'error');
+        }
+    }
+
+    // --- OTHER HELPERS ---
+
+    function initKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'n' || e.key === 'N') && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); window.openCreate(); }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); document.getElementById('searchSerial').focus(); }
+        });
+    }
+
+    function initSerialGenerator() {
+        const inputs = ['wireType', 'serialPrefix', 'globalSeq'];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', () => window.handleWireChange('standard'));
+                el.addEventListener('input', window.updateSmartSerial);
+            }
+        });
+    }
+
+    function updateSmartSerial() {
+        if (!isAutoSerialEnabled) return; 
+
+        const wire = document.getElementById('wireType').value;
+        const prefix = document.getElementById('serialPrefix').value;
+        const seq = document.getElementById('globalSeq').value;
+
+        let effectivePrefix = prefix;
+        
+        if (wire === "Favero") {
+            const lastDotIndex = effectivePrefix.lastIndexOf('.');
+            if (lastDotIndex !== -1) {
+                effectivePrefix = effectivePrefix.slice(0, lastDotIndex) + 'У' + effectivePrefix.slice(lastDotIndex);
+            } else {
+                effectivePrefix += 'У';
+            }
+        }
+
+        const serial = `${effectivePrefix}${seq}`;
+        document.getElementById('serialNumber').value = serial;
+    }
+    window.updateSmartSerial = updateSmartSerial;
+    
+    function checkSeqUniqueness() {
+        const inputSeq = parseInt(document.getElementById('globalSeq').value);
+        const currentEditId = document.getElementById('editId').value;
+        const warningEl = document.getElementById('seqWarning');
+        
+        if (isNaN(inputSeq)) {
+            warningEl.classList.add('d-none');
+            return;
+        }
+
+        const duplicate = window.localDB.find(item => item.globalSeq === inputSeq && item.id !== currentEditId);
+        if (duplicate) {
+            warningEl.classList.remove('d-none');
+        } else {
+            warningEl.classList.add('d-none');
+        }
+    }
+    window.checkSeqUniqueness = checkSeqUniqueness;
+
+    function setAutoSeq() { 
+        document.getElementById('globalSeq').value = window.localDB.length > 0 ? Math.max(...window.localDB.map(o => o.globalSeq || 0)) + 1 : 1; 
+        updateSmartSerial(); 
+    }
+    window.setAutoSeq = setAutoSeq;
+    
+    // --- GLOBAL ACTIONS ---
+    
+    function openCreate() {
+        document.getElementById('maskForm').reset();
+        document.getElementById('editId').value = '';
+        document.getElementById('isInCRM').checked = false;
+        document.getElementById('offcanvasTitle').innerHTML = '<i class="fas fa-plus-circle text-success me-2"></i>Новая катушка';
+        document.getElementById('deleteBtnInForm').style.display = 'none';
+        document.getElementById('seqWarning').classList.add('d-none'); 
+        
+        document.getElementById('serialPrefix').value = "M3/2023.";
+        document.getElementById('wireType').value = "Китайский";
+        
+        const now = new Date();
+        document.getElementById('prodMonth').value = now.getMonth() + 1;
+        document.getElementById('prodYear').value = now.getFullYear();
+
+        window.setAutoSeq(); 
+        isAutoSerialEnabled = true;
+        setTimeout(() => window.handleWireChange('standard'), 100);
+        
+        const el = document.getElementById('editorOffcanvas');
+        if (el && window.bootstrap) {
+            if (!offcanvasInstance) offcanvasInstance = new bootstrap.Offcanvas(el);
+            offcanvasInstance.show();
+        }
+    }
+    window.openCreate = openCreate;
+    
+    function openEdit(id) {
+        const rec = window.localDB.find(x => x.id === id);
+        if(!rec) return;
+        
+        isAutoSerialEnabled = true;
+
+        document.getElementById('editId').value = rec.id;
+        document.getElementById('serialNumber').value = rec.serial;
+        document.getElementById('globalSeq').value = rec.globalSeq;
+        
+        let wireVal = rec.wireType;
+        if(!wireVal && rec.model) {
+             wireVal = rec.model.includes('У') ? 'Favero' : 'Китайский';
+        }
+        if (wireVal === "Стандарт") wireVal = "Китайский";
+        if (wireVal === "У") wireVal = "Favero";
+        
+        document.getElementById('wireType').value = wireVal || "Китайский";
+        document.getElementById('spoolModel').value = rec.spoolModel || (wireVal === "Favero" ? "2025" : "2024");
+        document.getElementById('spoolModel').disabled = false;
+        
+        const now = new Date();
+        document.getElementById('prodMonth').value = rec.month || (now.getMonth() + 1);
+        document.getElementById('prodYear').value = rec.year || now.getFullYear();
+
+        document.getElementById('serialPrefix').value = rec.prefix || "M3/2023.";
+        document.getElementById('notes').value = rec.notes || "";
+        document.getElementById('isInCRM').checked = !!rec.isInCRM;
+        document.getElementById('offcanvasTitle').innerHTML = '<i class="fas fa-edit text-primary me-2"></i>Редактирование';
+        document.getElementById('deleteBtnInForm').style.display = 'block';
+        document.getElementById('seqWarning').classList.add('d-none');
+        
+        const el = document.getElementById('editorOffcanvas');
+        if (el && window.bootstrap) {
+            if (!offcanvasInstance) offcanvasInstance = new bootstrap.Offcanvas(el);
+            offcanvasInstance.show();
+        }
+    }
+    window.openEdit = openEdit;
+    
+    function closeOffcanvas() { 
+        if (offcanvasInstance) offcanvasInstance.hide(); 
+    }
+    window.closeOffcanvas = closeOffcanvas;
+
+    function openSettings() {
+        renderSettingsModal();
+        new bootstrap.Modal(document.getElementById('settingsModal')).show();
+    }
+    window.openSettings = openSettings;
+
+    function renderSettingsModal() {
+        const container = document.getElementById('settingsList');
+        container.innerHTML = '';
+        (window.appSettings.models || []).forEach((m, index) => {
+            const row = document.createElement('div');
+            row.className = 'input-group input-group-sm';
+            row.innerHTML = `
+                <span class="input-group-text">Год</span>
+                <input type="text" class="form-control" placeholder="2024" value="${m.year}" onchange="window.updateSetting(${index}, 'year', this.value)">
+                <span class="input-group-text">EAN</span>
+                <input type="text" class="form-control" placeholder="Code" value="${m.ean}" onchange="window.updateSetting(${index}, 'ean', this.value)">
+                <button class="btn btn-outline-danger" onclick="window.removeSettingRow(${index})"><i class="fas fa-times"></i></button>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    function addSettingRow() {
+        window.appSettings.models.push({ year: "", ean: "" });
+        renderSettingsModal();
+    }
+    window.addSettingRow = addSettingRow;
+
+    function removeSettingRow(index) {
+        window.appSettings.models.splice(index, 1);
+        renderSettingsModal();
+    }
+    window.removeSettingRow = removeSettingRow;
+
+    function updateSetting(index, field, value) {
+        window.appSettings.models[index][field] = value;
+    }
+    window.updateSetting = updateSetting;
+
+    async function saveSettings() {
+        window.appSettings.models = window.appSettings.models.filter(m => m.year && m.ean);
+        try {
+            await setDoc(doc(dbRef, "metadata", "config"), window.appSettings);
+            showToast('Настройки сохранены');
+            bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+        } catch(e) {
+            showToast('Ошибка сохранения: ' + e.message, 'error');
+        }
+    }
+    window.saveSettings = saveSettings;
+
+    function copyAndOpen(id) {
+        const rec = window.localDB.find(x => x.id === id);
+        if(!rec) return;
+        copyTextToClipboard(rec.serial);
+        openEdit(id);
+    }
+    window.copyAndOpen = copyAndOpen;
+    
+    function copyTextToClipboard(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            var successful = document.execCommand('copy');
+            if (successful) showToast('Скопировано: ' + text);
+            else prompt("Скопируйте текст:", text);
+        } catch (err) {
+            showToast('Ошибка копирования', 'error');
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function openBulkEdit() {
+        if (selectedIds.size === 0) return;
+        if (selectedIds.size === 1) { openEdit(Array.from(selectedIds)[0]); return; }
+        document.getElementById('bulkCountDisplay').innerText = selectedIds.size;
+        document.getElementById('bulkEditForm').reset();
+        document.getElementById('bulkSpoolModel').disabled = true;
+        updateDropdowns(); 
+        new bootstrap.Modal(document.getElementById('bulkEditModal')).show();
+    }
+    window.openBulkEdit = openBulkEdit;
+
+    function submitBulkEdit() { submitBulkEditAsync(); }
+    window.submitBulkEdit = submitBulkEdit;
+    
+    async function submitBulkEditAsync() {
+        const updates = {};
+        const wire = document.getElementById('bulkWireType').value;
+        const sModel = document.getElementById('bulkSpoolModel').value;
+        const crm = document.getElementById('bulkCRMSelect').value;
+
+        if (wire) updates.wireType = wire;
+        if (sModel) updates.spoolModel = sModel;
+        if (crm !== "") updates.isInCRM = (crm === '1');
+
+        if (Object.keys(updates).length === 0) {
+            bootstrap.Modal.getInstance(document.getElementById('bulkEditModal')).hide();
+            return;
+        }
+        updates.updatedAt = serverTimestamp();
+        const batchPromises = Array.from(selectedIds).map(id => updateDoc(doc(dbRef, "spools", id), updates)); 
+        await Promise.all(batchPromises);
+        bootstrap.Modal.getInstance(document.getElementById('bulkEditModal')).hide();
+        showToast(`Обновлено записей: ${selectedIds.size}`);
+        clearSelection();
+    }
+
+    function openBulkAdd() { 
+        document.getElementById('bulkAddForm').reset(); 
+        updateDropdowns();
+        window.handleWireChange('bulkAdd');
+        
+        // Reset progress bar
+        document.getElementById('baProgressContainer').style.display = 'none';
+        document.getElementById('baProgressBar').style.width = '0%';
+        document.getElementById('baProgressText').innerText = '0%';
+        document.getElementById('baSubmitBtn').disabled = false;
+        document.getElementById('baCancelBtn').disabled = false;
+
+        const now = new Date();
+        document.getElementById('baMonth').value = now.getMonth() + 1;
+        document.getElementById('baYear').value = now.getFullYear();
+        
+        new bootstrap.Modal(document.getElementById('bulkAddModal')).show(); 
+    }
+    window.openBulkAdd = openBulkAdd;
+
+    function executeBulkAdd() { executeBulkAddAsync(); }
+    window.executeBulkAdd = executeBulkAdd;
+
+    async function executeBulkAddAsync() {
+        const count = parseInt(document.getElementById('baCount').value) || 1;
+        const prefixRaw = document.getElementById('baPrefix').value.trim();
+        const startNum = parseInt(document.getElementById('baStartNum').value);
+        const wire = document.getElementById('baWireType').value;
+        const sModel = document.getElementById('baSpoolModel').value;
+        const bMonth = parseInt(document.getElementById('baMonth').value);
+        const bYear = parseInt(document.getElementById('baYear').value);
+        
+        let startSeq = (!isNaN(startNum)) ? startNum : 1;
+
+        // --- DUPLICATE CHECK FOR ENTIRE RANGE ---
+        for (let j = 0; j < count; j++) {
+            const checkSeq = startSeq + j;
+            if (window.localDB.some(x => x.globalSeq === checkSeq)) {
+                showToast(`Ошибка: Номер #${checkSeq} уже занят. Выберите другой диапазон.`, 'error');
+                return;
+            }
+        }
+        
+        // Show Progress UI
+        const container = document.getElementById('baProgressContainer');
+        const bar = document.getElementById('baProgressBar');
+        const text = document.getElementById('baProgressText');
+        const submitBtn = document.getElementById('baSubmitBtn');
+        const cancelBtn = document.getElementById('baCancelBtn');
+
+        container.style.display = 'block';
+        submitBtn.disabled = true;
+        cancelBtn.disabled = true;
+
+        let currentSeq = startSeq;
+        let createdCount = 0;
+
+        for(let i=0; i < count; i++) {
+            let effectivePrefix = prefixRaw;
+            if (wire === "Favero") {
+                const lastDotIndex = effectivePrefix.lastIndexOf('.');
+                if (lastDotIndex !== -1) {
+                    effectivePrefix = effectivePrefix.slice(0, lastDotIndex) + 'У' + effectivePrefix.slice(lastDotIndex);
+                } else {
+                    effectivePrefix += 'У';
+                }
+            }
+            
+            let serial = `${effectivePrefix}${currentSeq}`;
+            const record = { 
+                serial: serial, 
+                globalSeq: currentSeq, 
+                prefix: prefixRaw,
+                wireType: wire,
+                spoolModel: sModel,
+                month: bMonth,
+                year: bYear,
+                notes: "Массовое добавление", 
+                isInCRM: false, 
+                createdAt: serverTimestamp() 
+            };
+            
+            await addDoc(collection(dbRef, "spools"), record);
+            
+            createdCount++;
+            currentSeq++;
+            
+            // Update progress UI
+            const percent = Math.round((createdCount / count) * 100);
+            bar.style.width = `${percent}%`;
+            text.innerText = `${percent}%`;
+        }
+        
+        setTimeout(() => {
+            bootstrap.Modal.getInstance(document.getElementById('bulkAddModal')).hide();
+            showToast(`Добавлено: ${count} шт.`);
+        }, 300);
+    }
+
+    function openMenuModal() { new bootstrap.Modal(document.getElementById('menuModal')).show(); }
+    window.openMenuModal = openMenuModal;
+
+    function openShipmentModal() {
+        document.getElementById('shipmentSearchInput').value = '';
+        document.getElementById('shipmentSearchResults').innerHTML = '';
+        renderShipmentBuffer();
+        new bootstrap.Modal(document.getElementById('shipmentModal')).show();
+        // Strengthened Autofocus for shipment scanner
+        setTimeout(() => {
+            const input = document.getElementById('shipmentSearchInput');
+            if(input) {
+                input.focus();
+                input.click();
+            }
+        }, 600);
+    }
+    window.openShipmentModal = openShipmentModal;
+
+    function handleShipmentKey(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const query = e.target.value.trim().toLowerCase();
+            if (!query) return;
+
+            // 1. Try exact serial match
+            let bestMatch = window.localDB.find(item => item.serial.toLowerCase() === query);
+            
+            // 2. Try exact sequence number match
+            if (!bestMatch) {
+                bestMatch = window.localDB.find(item => String(item.globalSeq) === query);
+            }
+
+            // 3. Fallback to first visible result from the search list
+            if (!bestMatch) {
+                const matches = window.localDB.filter(item => {
+                    const isInBuffer = window.shipmentBuffer.some(b => b.id === item.id);
+                    const matchesQuery = item.serial.toLowerCase().includes(query) || (item.globalSeq && String(item.globalSeq).includes(query));
+                    return !isInBuffer && matchesQuery;
+                });
+                if (matches.length > 0) bestMatch = matches[0];
+            }
+
+            if (bestMatch) {
+                // Check if already in buffer
+                if (window.shipmentBuffer.some(b => b.id === bestMatch.id)) {
+                    showToast('Уже в списке', 'warning');
+                } else {
+                    window.addToShipment(bestMatch.id);
+                }
+            } else {
+                showToast('Катушка не найдена', 'error');
+            }
+            
+            // Re-focus and clear
+            e.target.value = '';
+            window.handleShipmentSearch('');
+            e.target.focus();
+        }
+    }
+    window.handleShipmentKey = handleShipmentKey;
+
+    function handleShipmentSearch(query) {
+        const resultsDiv = document.getElementById('shipmentSearchResults');
+        if (!query || query.trim() === '') {
+            resultsDiv.classList.add('d-none');
+            return;
+        }
+        query = query.toLowerCase();
+        
+        const matches = window.localDB.filter(item => {
+            const isInBuffer = window.shipmentBuffer.some(b => b.id === item.id);
+            const matchesQuery = item.serial.toLowerCase().includes(query) || (item.globalSeq && String(item.globalSeq).includes(query));
+            return !isInBuffer && matchesQuery;
+        }).slice(0, 10);
+
+        let html = '';
+        if (matches.length === 0) {
+            resultsDiv.classList.remove('d-none');
+            resultsDiv.innerHTML = '<div class="p-3 text-muted small text-center">Ничего не найдено</div>';
+        } else {
+            matches.forEach(item => {
+                const wire = item.wireType || (item.model && item.model.includes('У') ? 'Favero' : 'Китайский');
+                html += `
+                <div class="shipment-item" style="cursor:pointer;" onclick="window.addToShipment('${item.id}')">
+                    <div>
+                        <span class="fw-bold text-primary">${item.serial}</span>
+                        <span class="text-muted small ms-2">${wire}</span>
+                    </div>
+                    <i class="fas fa-plus text-success"></i>
+                </div>`;
+            });
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.remove('d-none');
+        }
+    }
+    window.handleShipmentSearch = handleShipmentSearch;
+
+    function addToShipment(id) {
+        const item = window.localDB.find(x => x.id === id);
+        if (item) {
+            window.shipmentBuffer.push(item);
+            document.getElementById('shipmentSearchInput').value = ''; 
+            document.getElementById('shipmentSearchResults').classList.add('d-none'); 
+            renderShipmentBuffer();
+            showToast('Добавлено в буфер');
+            // Force focus back for continuous scanning
+            document.getElementById('shipmentSearchInput').focus();
+        }
+    }
+    window.addToShipment = addToShipment;
+
+    function removeFromShipment(id) {
+        window.shipmentBuffer = window.shipmentBuffer.filter(x => x.id !== id);
+        renderShipmentBuffer();
+    }
+    window.removeFromShipment = removeFromShipment;
+
+    function clearShipmentBuffer() {
+        window.shipmentBuffer = [];
+        renderShipmentBuffer();
+    }
+    window.clearShipmentBuffer = clearShipmentBuffer;
+
+    function renderShipmentBuffer() {
+        const list = document.getElementById('shipmentBufferList');
+        const countSpan = document.getElementById('shipmentCount');
+        const summaryDiv = document.getElementById('shipmentSummary');
+        
+        if (countSpan) countSpan.innerText = window.shipmentBuffer.length;
+        
+        if (window.shipmentBuffer.length === 0) {
+            if(summaryDiv) summaryDiv.innerHTML = '';
+            list.innerHTML = `
+                <div class="text-center text-muted py-5 mt-3">
+                    <i class="fas fa-box-open fa-3x mb-3 opacity-50"></i>
+                    <p class="mb-1">Буфер пуст</p>
+                </div>`;
+            return;
+        }
+
+        // Calculate Grouping Statistics
+        const stats = window.shipmentBuffer.reduce((acc, item) => {
+            const wire = item.wireType || (item.model && item.model.includes('У') ? 'Favero' : 'Китайский');
+            acc[wire] = (acc[wire] || 0) + 1;
+            return acc;
+        }, {});
+
+        if(summaryDiv) {
+            summaryDiv.innerHTML = Object.entries(stats).map(([type, count]) => {
+                const color = type === 'Favero' ? 'secondary' : 'primary';
+                return `<span class="badge badge-soft-${color} border">${type}: ${count}</span>`;
+            }).join('');
+        }
+
+        let html = '';
+        [...window.shipmentBuffer].reverse().forEach(item => {
+            const wire = item.wireType || (item.model && item.model.includes('У') ? 'Favero' : 'Китайский');
+            html += `
+            <div class="card p-2 border shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold text-primary">${item.serial}</div>
+                        <div class="small text-muted">${wire}</div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-danger border-0" onclick="window.removeFromShipment('${item.id}')" title="Убрать">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        });
+        list.innerHTML = html;
+    }
+
+    function copyShipmentList() {
+        if (window.shipmentBuffer.length === 0) {
+            showToast('Список пуст', 'warning');
+            return;
+        }
+        const text = window.shipmentBuffer.map(i => i.serial).join('\n');
+        copyTextToClipboard(text);
+    }
+    window.copyShipmentList = copyShipmentList;
+
+    async function bulkPrintPassports() {
+        if (selectedIds.size === 0) {
+            showToast('Выберите хотя бы одну катушку', 'warning');
+            return;
+        }
+        
+        const items = window.localDB.filter(x => selectedIds.has(x.id));
+        const { jsPDF } = window.jspdf;
+        
+        showToast('Генерация PDF...', 'info');
+
+        const doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: [58, 40]
+        });
+
+        const container = document.createElement('div');
+        container.style.position = 'fixed';
+        container.style.top = '-10000px';
+        container.style.left = '-10000px';
+        document.body.appendChild(container);
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            const monthName = months[(item.month || 1) - 1]; 
+            const dateStr = `${monthName} ${item.year || new Date().getFullYear()}`;
+            
+            container.innerHTML = `
+                <div style="width: 58mm; height: 40mm; padding: 2mm 3mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; text-align: center; background: white; font-family: Arial, sans-serif;">
+                    <div style="font-weight: bold; font-size: 11pt; line-height: 1.1; margin-bottom: 2mm;">Катушка-сматыватель<br>«Малевич»</div>
+                    <div style="text-align: left; font-size: 9pt; line-height: 1.3; margin-bottom: 2mm;">
+                        <div style="display: block;"><span style="font-weight: normal;">Серийный номер:</span> <span style="font-weight: bold; padding-left: 3px;">${item.serial}</span></div>
+                        <div style="display: block;"><span style="font-weight: normal;">Дата изготовления:</span> <span style="font-weight: bold; padding-left: 3px;">${dateStr}</span></div>
+                    </div>
+                    <div style="text-align: left; font-size: 8pt; line-height: 1.2;">
+                        <div style="font-weight: normal;">Производитель:</div>
+                        <div style="font-weight: bold;">ООО «Юпитер»</div>
+                    </div>
+                    <div style="font-size: 7pt; font-weight: bold; margin-top: auto; width: 100%;">Сделано в России</div>
+                </div>
+            `;
+
+            await new Promise(r => setTimeout(r, 10));
+            const canvas = await html2canvas(container.firstElementChild, { scale: 4 });
+            const imgData = canvas.toDataURL('image/png');
+
+            if (i > 0) doc.addPage();
+            doc.addImage(imgData, 'PNG', 0, 0, 58, 40);
+        }
+
+        document.body.removeChild(container);
+        
+        const pdfBlob = doc.output('bloburl');
+        const printWin = window.open(pdfBlob);
+        if (printWin) {
+            showToast('PDF открыт. Нажмите печать в браузере.');
+        } else {
+            doc.save('Passports_Batch.pdf');
+            showToast('PDF скачан (всплывающие окна заблокированы)');
+        }
+        clearSelection();
+    }
+    window.bulkPrintPassports = bulkPrintPassports;
+
+    function printLabel(id) { 
+        const item = window.localDB.find(x=>x.id===id);
+        const sModel = item.spoolModel || "2024";
+        const setting = (window.appSettings.models || []).find(m => m.year === sModel);
+        const eanCode = setting ? setting.ean : "";
+        const barcodeSvg = generateBarcodeSVG(eanCode);
+        
+        const html = `
+        <div class="label-container">
+            <div class="qr-box">
+                <div id="qr-${item.id}"></div>
+                <div class="sn-text">${item.serial}</div>
+            </div>
+            <div class="barcode-container">
+                ${barcodeSvg}
+            </div>
+        </div>
+        <script>
+            new QRCode(document.getElementById("qr-${item.id}"), { text: "${item.globalSeq}", width: 80, height: 80, correctLevel: QRCode.CorrectLevel.M });
+        <\/script>`;
+        
+        const win = window.open('','','width=400,height=400');
+        win.document.write(`
+            <html>
+            <head>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>
+                <style>
+                    @page{size:58mm 40mm;margin:0}
+                    body{margin:0;font-family:sans-serif}
+                    .label-container{width:58mm;height:40mm;display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px dashed #ddd;box-sizing:border-box;overflow:hidden;page-break-after:always; padding: 2px;}
+                    .qr-box{display:flex;flex-direction:column;align-items:center;justify-content:center; margin-bottom: 0px;}
+                    .sn-text{font-weight:800;font-size:14px;font-family:monospace;margin-top:2px}
+                    .barcode-container svg { max-width: 100%; height: auto; }
+                </style>
+            </head>
+            <body>${html}<script>setTimeout(()=>window.print(),500)<\/script></body>
+            </html>`);
+    }
+    window.printLabel = printLabel;
+
+    function printPassport(id) {
+        const item = window.localDB.find(x => x.id === id);
+        if (!item) return;
+
+        const monthName = months[(item.month || 1) - 1]; 
+        const dateStr = `${monthName} ${item.year || new Date().getFullYear()}`;
+
+        const html = `
+        <div class="label-container">
+            <div class="header">Катушка-сматыватель<br>«Малевич»</div>
+            <div class="main-info">
+                <div class="row">
+                    <span class="label">Серийный номер:</span>
+                    <span class="value">${item.serial}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Дата изготовления:</span>
+                    <span class="value">${dateStr}</span>
+                </div>
+            </div>
+            <div class="manufacturer">
+                <div class="man-label">Производитель:</div>
+                <div class="man-value">ООО «Юпитер»</div>
+            </div>
+            <div class="footer">Сделано в России</div>
+        </div>`;
+
+        const win = window.open('', '', 'width=400,height=400');
+        win.document.write(`
+            <html>
+            <head>
+                <style>
+                    @page { size: 58mm 40mm; margin: 0; }
+                    body { margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
+                    .label-container {
+                        width: 58mm; height: 40mm; padding: 2mm 3mm; box-sizing: border-box;
+                        display: flex; flex-direction: column; justify-content: space-between; text-align: center;
+                    }
+                    .header { font-weight: bold; font-size: 11pt; line-height: 1.1; margin-bottom: 2mm; }
+                    .main-info { text-align: left; font-size: 9pt; line-height: 1.3; margin-bottom: 2mm; }
+                    .row { display: block; }
+                    .label { font-weight: normal; }
+                    .value { font-weight: bold; padding-left: 3px; }
+                    .manufacturer { text-align: left; font-size: 8pt; line-height: 1.2; }
+                    .man-label { font-weight: normal; }
+                    .man-value { font-weight: bold; }
+                    .footer { font-size: 7pt; font-weight: bold; margin-top: auto; text-align: center; width: 100%; }
+                </style>
+            </head>
+            <body>${html}<script>setTimeout(() => window.print(), 500);<\/script></body>
+            </html>
+        `);
+    }
+    window.printPassport = printPassport;
+    
+    function bulkPrint() {
+        if (selectedIds.size === 0) return;
+        const items = window.localDB.filter(x => selectedIds.has(x.id));
+        const win = window.open('','','width=800,height=600');
+        
+        const content = items.map(item => {
+            const sModel = item.spoolModel || "2024";
+            const setting = (window.appSettings.models || []).find(m => m.year === sModel);
+            const eanCode = setting ? setting.ean : "";
+            const barcodeSvg = generateBarcodeSVG(eanCode);
+            
+            return `
+            <div class="label-container">
+                <div class="qr-box">
+                    <div id="qr-${item.id}"></div>
+                    <div class="sn-text">${item.serial}</div>
+                </div>
+                <div class="barcode-container">
+                    ${barcodeSvg}
+                </div>
+            </div>
+            <script>
+                new QRCode(document.getElementById("qr-${item.id}"), { text: "${item.globalSeq}", width: 80, height: 80, correctLevel: QRCode.CorrectLevel.M });
+            <\/script>`;
+        }).join('<div style="page-break-after: always; height: 1px;"></div>');
+        
+        win.document.write(`
+            <html>
+            <head>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>
+                <style>
+                    @page{size:58mm 40mm;margin:0}
+                    body{margin:0;font-family:sans-serif}
+                    .label-container{width:58mm;height:40mm;display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px dashed #ddd;box-sizing:border-box;overflow:hidden;padding:2px;}
+                    .qr-box{display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:0px;}
+                    .sn-text{font-weight:800;font-size:14px;font-family:monospace;margin-top:2px}
+                    .barcode-container svg { max-width: 100%; height: auto; }
+                </style>
+            </head>
+            <body>${content}<script>setTimeout(()=>window.print(),1000)<\/script></body>
+            </html>`);
+    }
+    window.bulkPrint = bulkPrint;
+    
+    function exportCSV() {
+        if(!window.localDB.length) return;
+        let csv = "Serial,WireType,Model,Notes\n" + window.localDB.map(r => `${r.serial},${r.wireType || (r.model && r.model.includes('У') ? 'Favero' : 'Китайский')},${r.spoolModel || ''},"${(r.notes||'').replace(/"/g,'""')}"`).join("\n");
+        const a = document.createElement("a"); a.href = "data:text/csv;charset=utf-8," + encodeURI(csv); a.download = "Spools_Export.csv"; a.click();
+    }
+    window.exportCSV = exportCSV;
+    
+    function printShipmentList() {
+        if (window.shipmentBuffer.length === 0) {
+            showToast('Список пуст', 'warning');
+            return;
+        }
+        
+        const itemsHtml = window.shipmentBuffer.map((item, index) => {
+            const wire = item.wireType || (item.model && item.model.includes('У') ? 'Favero' : 'Китайский');
+            return `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${item.serial}</strong></td>
+                    <td>${wire}</td>
+                    <td>${item.spoolModel || '-'}</td>
+                    <td>-</td>
+                </tr>
+            `;
+        }).join('');
+
+        const win = window.open('', '', 'width=800,height=600');
+        win.document.write(`
+            <html>
+            <head>
+                <title>Упаковочный лист</title>
+                <style>
+                    body { font-family: sans-serif; padding: 20px; color: #333; }
+                    .header { margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; display:flex; justify-content:space-between; align-items:flex-end; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f8f9fa; font-weight: bold; text-transform: uppercase; font-size: 12px; }
+                    tr:nth-child(even) { background-color: #f9f9f9; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div>
+                        <h2>Упаковочный лист</h2>
+                        <div>Катушки</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div><strong>Дата:</strong> ${new Date().toLocaleDateString()}</div>
+                        <div><strong>Всего позиций:</strong> ${window.shipmentBuffer.length}</div>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">№</th>
+                            <th>Серийный номер</th>
+                            <th>Провод</th>
+                            <th>Модель/Год</th>
+                            <th>Отметка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml}
+                    </tbody>
+                </table>
+                <script>setTimeout(() => window.print(), 500);<\/script>
+            </body>
+            </html>
+        `);
+    }
+    window.printShipmentList = printShipmentList;
+
+    function saveRecord() {
+        const editId = document.getElementById('editId').value;
+        const serial = document.getElementById('serialNumber').value.trim();
+        const seq = Number(document.getElementById('globalSeq').value);
+
+        if (!serial) { showToast('Введите серийный номер', 'error'); return; }
+        
+        // --- DUPLICATE CHECKS ---
+        if (window.localDB.some(x => x.serial === serial && x.id !== editId)) { 
+            showToast('Серийный номер уже существует!', 'error'); 
+            return; 
+        }
+        if (window.localDB.some(x => x.globalSeq === seq && x.id !== editId)) { 
+            showToast(`Сквозной номер #${seq} уже занят!`, 'error'); 
+            return; 
+        }
+
+        const record = {
+            serial: serial, 
+            prefix: document.getElementById('serialPrefix').value,
+            globalSeq: seq, 
+            wireType: document.getElementById('wireType').value,
+            spoolModel: document.getElementById('spoolModel').value,
+            month: Number(document.getElementById('prodMonth').value),
+            year: Number(document.getElementById('prodYear').value),
+            notes: document.getElementById('notes').value, 
+            isInCRM: document.getElementById('isInCRM').checked, 
+            updatedAt: serverTimestamp()
+        };
+        
+        if(editId) { 
+            updateDoc(doc(dbRef, "spools", editId), record).then(() => showToast('Обновлено')).catch(e => showToast('Ошибка: ' + e.message, 'error'));
+        } else { 
+            record.createdAt = serverTimestamp(); 
+            addDoc(collection(dbRef, "spools"), record).then(() => showToast('Создано')).catch(e => showToast('Ошибка: ' + e.message, 'error'));
+        }
+        offcanvasInstance.hide();
+    }
+    window.saveRecord = saveRecord;
+
+    function deleteFromForm() {
+        recordToDeleteId = document.getElementById('editId').value;
+        isBulkDelete = false;
+        offcanvasInstance.hide();
+        executeDelete(); 
+    }
+    window.deleteFromForm = deleteFromForm;
+    
+    function bulkDeleteConfirm() {
+        if (selectedIds.size === 0) return;
+        isBulkDelete = true;
+        document.getElementById('deleteTitle').innerText = `Удалить ${selectedIds.size} шт?`;
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+    window.bulkDeleteConfirm = bulkDeleteConfirm;
+    
+    function deleteRecordDirect(id) {
+        recordToDeleteId = id;
+        isBulkDelete = false;
+        executeDelete(); 
+    }
+    window.deleteRecordDirect = deleteRecordDirect;
+    
+    function executeDelete() {
+        const modalEl = document.getElementById('deleteModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if(modal) modal.hide();
+
+        if(isBulkDelete) {
+            const promises = Array.from(selectedIds).map(id => deleteDoc(doc(dbRef, "spools", id)));
+            Promise.all(promises).then(() => {
+                clearSelection();
+                showToast('Удалено');
+            });
+        } else {
+            deleteDoc(doc(dbRef, "spools", recordToDeleteId)).then(() => showToast('Удалено'));
+        }
+    }
+    window.executeDelete = executeDelete;
+
+    function updateCharts() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const tickColor = isDark ? '#94a3b8' : '#64748b';
+        const ctxM = document.getElementById('modelPieChart');
+        if(ctxM) {
+            if(modelPieInstance) modelPieInstance.destroy();
+            const counts = [ 
+                window.localDB.filter(x=>x.wireType === 'Китайский' || (x.model && !x.model.includes('У') && !x.wireType)).length, 
+                window.localDB.filter(x=>x.wireType === 'Favero' || (x.model && x.model.includes('У'))).length 
+            ];
+            modelPieInstance = new Chart(ctxM, {
+                type: 'doughnut',
+                data: { labels: ['Китайский','Favero'], datasets: [{ data: counts, backgroundColor: ['#0d6efd','#6f42c1'], borderWidth:0 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: {position:'bottom', labels: {boxWidth: 10, color: tickColor}} } }
+            });
+        }
+    }
+    window.updateCharts = updateCharts;
+
+    function toggleTheme() {
+        const h = document.documentElement; const next = h.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        h.setAttribute('data-theme', next); localStorage.setItem('theme', next);
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = next==='dark' ? 'fas fa-sun' : 'fas fa-moon';
+        updateCharts();
+    }
+    window.toggleTheme = toggleTheme;
+
+    function clearLocalData() { localStorage.clear(); location.reload(); }
+    window.clearLocalData = clearLocalData;
+
+    const savedTheme = localStorage.getItem('theme') || 'light'; document.documentElement.setAttribute('data-theme', savedTheme);
+
+    initApp();
+</script>
+</body>
+</html>
