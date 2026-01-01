@@ -56,6 +56,7 @@ async function printLabel(id) {
             <div class="qr-box">
                 <div id="qr-${item.id}"></div>
                 <div class="sn-text">${item.serial}</div>
+                ${eanCode ? `<div class="ean-text">${eanCode}</div>` : ''}
             </div>
             <div class="barcode-container">
                 ${barcodeSvg}
@@ -81,6 +82,7 @@ async function printLabel(id) {
                 .label-container{width:58mm;height:40mm;display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px dashed #ddd;box-sizing:border-box;overflow:hidden;page-break-after:always; padding: 2px;}
                 .qr-box{display:flex;flex-direction:column;align-items:center;justify-content:center; margin-bottom: 0px;}
                 .sn-text{font-weight:800;font-size:14px;font-family:monospace;margin-top:2px}
+                .ean-text{font-size:10px;font-family:monospace;color:#666;margin-top:1px}
                 .barcode-container svg { max-width: 100%; height: auto; }
             </style>
         </head>
@@ -169,6 +171,7 @@ async function bulkPrint() {
                 <div class="qr-box">
                     <div id="qr-${item.id}"></div>
                     <div class="sn-text">${item.serial}</div>
+                    ${eanCode ? `<div class="ean-text">${eanCode}</div>` : ''}
                 </div>
                 <div class="barcode-container">
                     ${barcodeSvg}
@@ -194,6 +197,7 @@ async function bulkPrint() {
                 .label-container{width:58mm;height:40mm;display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px dashed #ddd;box-sizing:border-box;overflow:hidden;padding:2px;}
                 .qr-box{display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:0px;}
                 .sn-text{font-weight:800;font-size:14px;font-family:monospace;margin-top:2px}
+                .ean-text{font-size:10px;font-family:monospace;color:#666;margin-top:1px}
                 .barcode-container svg { max-width: 100%; height: auto; }
             </style>
         </head>
