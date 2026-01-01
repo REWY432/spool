@@ -174,8 +174,49 @@ function generatePassportHTML(item) {
         
         .manufacturer-block {
             font-size: 8pt;
-            margin-top: 3px;
-            margin-bottom: 5px;
+            margin-top: 5px;
+            margin-bottom: 8px;
+            padding: 6px 8px;
+            border: 1px solid #999;
+            border-radius: 4px;
+            background: linear-gradient(to bottom, #fafafa, #f0f0f0);
+        }
+        
+        .manufacturer-title {
+            font-weight: bold;
+            font-size: 8pt;
+            color: #333;
+            margin-bottom: 3px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 2px;
+        }
+        
+        .manufacturer-name {
+            font-weight: bold;
+            font-size: 9pt;
+            color: #000;
+            margin-bottom: 4px;
+        }
+        
+        .manufacturer-details {
+            width: 100%;
+            font-size: 7.5pt;
+            border-collapse: collapse;
+        }
+        
+        .manufacturer-details td {
+            padding: 1px 0;
+            vertical-align: top;
+        }
+        
+        .manufacturer-details td:first-child {
+            width: 65px;
+            color: #555;
+            font-weight: normal;
+        }
+        
+        .manufacturer-details td:last-child {
+            color: #000;
         }
         
         p {
@@ -307,9 +348,14 @@ function generatePassportHTML(item) {
                 </div>
                 
                 <div class="manufacturer-block">
-                    <strong>Предприятие-изготовитель:</strong> ${COMPANY_INFO.manufacturer} 
-                    ИНН/КПП ${COMPANY_INFO.inn}/${COMPANY_INFO.kpp}, ${COMPANY_INFO.address}; 
-                    ОГРН ${COMPANY_INFO.ogrn}; эл. Почта ${COMPANY_INFO.email}
+                    <div class="manufacturer-title">Предприятие-изготовитель:</div>
+                    <div class="manufacturer-name">${COMPANY_INFO.manufacturer}</div>
+                    <table class="manufacturer-details">
+                        <tr><td>ИНН/КПП:</td><td>${COMPANY_INFO.inn}/${COMPANY_INFO.kpp}</td></tr>
+                        <tr><td>ОГРН:</td><td>${COMPANY_INFO.ogrn}</td></tr>
+                        <tr><td>Адрес:</td><td>${COMPANY_INFO.address}</td></tr>
+                        <tr><td>Эл. почта:</td><td>${COMPANY_INFO.email}</td></tr>
+                    </table>
                 </div>
                 
                 <h2>Назначение изделия и область использования</h2>
